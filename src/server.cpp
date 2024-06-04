@@ -21,7 +21,7 @@
 
 int port = 4221;
 const char* successResponse = "HTTP/1.1 200 OK\r\n\r\n";
-const char* errorResponse = "HTTP-version HTTP/1.1 404 Not Found\r\n\r\n";
+const char* errorResponse = "HTTP/1.1 404 Not Found\r\n\r\n";
 
 HttpPacket ParseRequestHeader(const std::string & rawString);
 
