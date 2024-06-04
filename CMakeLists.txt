@@ -9,5 +9,9 @@ set(CMAKE_CXX_STANDARD 20) # Enable the C++20 standard
 
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 
-add_executable(server ${SOURCE_FILES})
+add_executable(server ${SOURCE_FILES}
+        src/HttpPacket.cpp
+        src/HttpPacket.h
+        src/HTTPMETHOD.h
+)
 target_link_libraries(server pthread)

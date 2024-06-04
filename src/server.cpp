@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 
+#include "HttpPacket.h"
+
 #ifdef _WIN64
 
 #include <winsock2.h>
@@ -18,7 +20,15 @@
 #endif
 
 int port = 4221;
-const char* buffer = "HTTP/1.1 200 OK\r\n\r\n";
+const char* successResponse = "HTTP/1.1 200 OK\r\n\r\n";
+const char* errorResponse = "HTTP/1.1 404 Not Found\r\n\r\n";
+
+HttpPacket ParseRequestHeader(const std::string & rawString);
+
+HttpPacket ParseRequestHeader(const std::string &rawString)
+{
+    return HttpPacket(rawString);
+}
 
 int main(int argc, char **argv)
 {
@@ -40,7 +50,7 @@ int main(int argc, char **argv)
     }
 
     // Uncomment this block to pass the first stage
-    SOCKET ListenSocket = socket(AF_INET, SOCK_STREAM, 0);
+    SOCKET ListenSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (ListenSocket == INVALID_SOCKET) {
         std::cerr << "Failed to create server socket\n";
         return 1;
@@ -57,18 +67,19 @@ int main(int argc, char **argv)
   // Since the tester restarts your program quite often, setting SO_REUSEADDR
   // ensures that we don't run into 'Address already in use' errors
 #ifdef _WIN64
- const char reuse = SO_KEEPALIVE;
+    const char reuse = SO_KEEPALIVE;
+    
     if (setsockopt(ListenSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
         std::cerr << "setsockopt failed\n";
         return 1;
     }
 #else
-  int reuse = 1;
+    int reuse = 1
 
-  if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
-    std::cerr << "setsockopt failed\n";
-    return 1;
-  }
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
+      std::cerr << "setsockopt failed\n";
+      return 1;
+    }
 #endif
 
 
@@ -90,17 +101,51 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    // u_long mode =1;
+    // ioctlsocket(ListenSocket,FIONBIO,&mode); // non - blocking
+
     struct sockaddr_in client_addr;
     int client_addr_len = sizeof(client_addr);
 
     std::cout << "Waiting for a client to connect...\n";
 
-    accept(ListenSocket, (struct sockaddr *) &client_addr,(socklen_t *)&client_addr_len );
-    std::cout << "Client connected\n";
+    char receiveBuffer[4096];
 
-    send(ListenSocket,buffer,24,0);
+    SOCKET clientSocket = accept(ListenSocket, (struct sockaddr *) &client_addr,(socklen_t *)&client_addr_len );
 
+    ssize_t readBytes = 0;
+    std::string s;
+
+    if((readBytes = recv(clientSocket,receiveBuffer,sizeof receiveBuffer - 1 ,0)) > 0)
+    {
+        receiveBuffer[readBytes] = '\0';
+        s.append(receiveBuffer,readBytes);
+
+        HttpPacket resp = ParseRequestHeader(s);
+
+        std::cout << "Received: " << resp.GetEndpoint() << std::endl;
+
+        if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().empty())
+        {
+            // Send a 200 success response when using GET and using no endpoint
+            send(clientSocket,successResponse,sizeof successResponse,0);
+        }
+        else if(resp.GetRequestType() == HTTPMETHOD::GET)
+        {
+            send(clientSocket,errorResponse,sizeof errorResponse,0);
+        }
+
+        // send(clientSocket,resp,strlen(resp),0);
+        // send(clientSocket,"hello!\r\n\r\n",14,0);
+        s = "";
+    }
+
+    std::cout << "End receiving" << std::endl;
+
+    close(clientSocket);
     close(ListenSocket);
+
+    WSACleanup();
 #else
 
 
@@ -123,8 +168,31 @@ int main(int argc, char **argv)
   int connectedClient = accept(server_fd, (struct sockaddr *) &client_addr,(socklen_t *)&client_addr_len );
   std::cout << "Client connected\n";
 
-  send(connectedClient,buffer,24,0);
+  char receiveBuffer[4096];
 
+  ssize_t readBytes = 0;
+  std::string s;
+
+  if((readBytes = recv(connectedClient,receiveBuffer,sizeof receiveBuffer - 1 ,0)) > 0)
+  {
+      receiveBuffer[readBytes] = '\0';
+      s.append(receiveBuffer,readBytes);
+
+      HttpPacket resp = ParseRequestHeader(s);
+
+      std::cout << "Received: " << resp.GetEndpoint() << std::endl;
+
+      if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().empty())
+      {
+          // Send a 200 success response when using GET and using no endpoint
+          send(clientSocket,successResponse,sizeof successResponse,0);
+      }
+      else if(resp.GetRequestType() == HTTPMETHOD::GET)
+      {
+          send(clientSocket,errorResponse,sizeof errorResponse,0);
+      }
+  }
+  close(connectedClient);
   close(server_fd);
 
 #endif
