@@ -120,10 +120,10 @@ int main(int argc, char **argv)
   
   std::cout << "Waiting for a client to connect...\n";
 
-  accept(server_fd, (struct sockaddr *) &client_addr,(socklen_t *)&client_addr_len );
+  int connectedClient = accept(server_fd, (struct sockaddr *) &client_addr,(socklen_t *)&client_addr_len );
   std::cout << "Client connected\n";
 
-  send(server_fd,buffer,24,0);
+  send(connectedClient,buffer,24,0);
 
   close(server_fd);
 
