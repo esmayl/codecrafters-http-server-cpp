@@ -4,9 +4,15 @@
 #include <cstring>
 #include <unistd.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netdb.h>
+#ifdef _WIN64
+    #include <winsock2.h>
+#include <wspiapi.h>
+
+#else
+    #include <sys/socket.h>
+    #include <arpa/inet.h>
+    #include <netdb.h>
+#endif
 
 int main(int argc, char **argv) {
   // Flush after every std::cout / std::cerr
@@ -26,7 +32,12 @@ int main(int argc, char **argv) {
   
   // Since the tester restarts your program quite often, setting SO_REUSEADDR
   // ensures that we don't run into 'Address already in use' errors
+#ifdef _WIN64
+ const char reuse = SO_KEEPALIVE;
+#else
   int reuse = 1;
+#endif
+
   if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
     std::cerr << "setsockopt failed\n";
     return 1;
@@ -52,8 +63,8 @@ int main(int argc, char **argv) {
   int client_addr_len = sizeof(client_addr);
   
   std::cout << "Waiting for a client to connect...\n";
-  
-  accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len);
+
+  accept(server_fd, (struct sockaddr *) &client_addr,(socklen_t *)&client_addr_len );
   std::cout << "Client connected\n";
   
   close(server_fd);
