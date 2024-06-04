@@ -185,11 +185,11 @@ int main(int argc, char **argv)
       if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().empty())
       {
           // Send a 200 success response when using GET and using no endpoint
-          send(connectedClient,successResponse,sizeof successResponse,0);
+          send(connectedClient,successResponse,strlen(successResponse),0);
       }
       else if(resp.GetRequestType() == HTTPMETHOD::GET)
       {
-          send(connectedClient,errorResponse,sizeof errorResponse,0);
+          send(connectedClient,errorResponse,strlen(errorResponse),0);
       }
   }
   close(connectedClient);
