@@ -74,7 +74,7 @@ int main(int argc, char **argv)
         return 1;
     }
 #else
-    int reuse = 1
+    int reuse = 1;
 
     if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
       std::cerr << "setsockopt failed\n";
@@ -185,11 +185,11 @@ int main(int argc, char **argv)
       if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().empty())
       {
           // Send a 200 success response when using GET and using no endpoint
-          send(clientSocket,successResponse,sizeof successResponse,0);
+          send(connectedClient,successResponse,sizeof successResponse,0);
       }
       else if(resp.GetRequestType() == HTTPMETHOD::GET)
       {
-          send(clientSocket,errorResponse,sizeof errorResponse,0);
+          send(connectedClient,errorResponse,sizeof errorResponse,0);
       }
   }
   close(connectedClient);
