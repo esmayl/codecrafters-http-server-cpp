@@ -17,7 +17,12 @@
     #include <netdb.h>
 #endif
 
-int main(int argc, char **argv) {
+int port = 4221;
+const char* buffer = "HTTP/1.1 200 OK\r\n\r\n";
+
+int main(int argc, char **argv)
+{
+
   // Flush after every std::cout / std::cerr
   std::cout << std::unitbuf;
   std::cerr << std::unitbuf;
@@ -25,10 +30,11 @@ int main(int argc, char **argv) {
   // You can use print statements as follows for debugging, they'll be visible when running tests.
   std::cout << "Logs from your program will appear here!\n";
 
+
 #ifdef _WIN64
     WSADATA wsaData;
     int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (iResult != NO_ERROR) {
+    if (iResult != NO_ERROR){
         wprintf(L"Error at WSAStartup()\n");
         return 1;
     }
@@ -70,7 +76,7 @@ int main(int argc, char **argv) {
   struct sockaddr_in server_addr;
   server_addr.sin_family = AF_INET;
   server_addr.sin_addr.s_addr = INADDR_ANY;
-  server_addr.sin_port = htons(4221);
+  server_addr.sin_port = htons(port);
 
 #ifdef _WIN64
     if (bind(ListenSocket, (struct sockaddr *) &server_addr, sizeof(server_addr)) != 0) {
@@ -91,6 +97,8 @@ int main(int argc, char **argv) {
 
     accept(ListenSocket, (struct sockaddr *) &client_addr,(socklen_t *)&client_addr_len );
     std::cout << "Client connected\n";
+
+    send(ListenSocket,buffer,24,0);
 
     close(ListenSocket);
 #else
@@ -114,6 +122,8 @@ int main(int argc, char **argv) {
 
   accept(server_fd, (struct sockaddr *) &client_addr,(socklen_t *)&client_addr_len );
   std::cout << "Client connected\n";
+
+  send(server_fd,buffer,24,0);
 
   close(server_fd);
 
