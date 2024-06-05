@@ -265,7 +265,7 @@ int main(int argc, char **argv)
   int client_addr_len = sizeof(client_addr);
   
   std::cout << "Waiting for a client to connect...\n";
-  std::vector<SOCKET> clients;
+  std::vector<int> clients;
 
   while(true)
   {
