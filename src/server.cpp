@@ -35,7 +35,7 @@ char* CreateEmptyResponse(const char* response)
     size_t responseLength = strlen(response);
     char* tempCharPointer = new char[responseLength+2];
 
-    strcpy(tempCharPointer,Globals::successResponse);
+    strcpy(tempCharPointer,response);
 
     tempCharPointer[responseLength] = '\r';
     tempCharPointer[responseLength+1] = '\n';
