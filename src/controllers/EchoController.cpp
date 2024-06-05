@@ -9,7 +9,7 @@
 
 #include "../Globals.h"
 
-void EchoController::BuildResponse(HttpPacket& packet, const char* responseChar)
+const char* EchoController::BuildResponse(HttpPacket& packet)
 {
     std::string buildResponse;
     buildResponse.append(Globals::successResponse);
@@ -23,13 +23,11 @@ void EchoController::BuildResponse(HttpPacket& packet, const char* responseChar)
 
     buildResponse.append(" ");
     buildResponse.append(std::to_string(contentLength));
-    buildResponse.append("\r\n");
+    buildResponse.append("\r\n\r\n");
 
     buildResponse.append(packetEndpoint.substr(lastSlashIndex));
 
-    responseChar = buildResponse.c_str();
-
-    std::cout << "Sending " <<responseChar<< std::endl;
+    return buildResponse.c_str();
 }
 
 #ifdef _WIN64
@@ -37,7 +35,9 @@ void EchoController::BuildResponse(HttpPacket& packet, const char* responseChar)
     {
         const char* responseChar;
 
-        BuildResponse(packet, responseChar);
+        responseChar = BuildResponse(packet);
+
+        std::cout << "Sending " <<responseChar<< std::endl;
 
         send(socket,responseChar,strlen(responseChar),0);
     }
@@ -48,7 +48,9 @@ void EchoController::BuildResponse(HttpPacket& packet, const char* responseChar)
     {
         const char* responseChar;
 
-        BuildResponse(packet, responseChar);
+        responseChar = BuildResponse(packet);
+
+        std::cout << "Sending " <<responseChar<< std::endl;
 
         send(socket,responseChar,strlen(responseChar),0);
     }
