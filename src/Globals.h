@@ -8,9 +8,11 @@
 
 class HttpPacket;
 
-namespace Globals {
-    extern const char* successResponse;
-    extern const char* errorResponse;
+class Globals {
+
+public:
+    static const char* successResponse;
+    static const char* errorResponse;
 
     static std::string BuildResponse(const std::string& responseBody);
 };
