@@ -217,7 +217,7 @@ int main(int argc, char **argv)
           std::cout << "Sending success: " << newCharPointer << std::endl;
 
           // Send a 200 success response when using GET and using no endpoint
-          send(connectedClient,Globals::successResponse,strlen(Globals::successResponse),0);
+          send(connectedClient,newCharPointer,strlen(newCharPointer),0);
       }
       else if(resp.GetRequestType() == HTTPMETHOD::GET)
       {
