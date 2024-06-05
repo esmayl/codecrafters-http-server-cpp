@@ -13,5 +13,9 @@ add_executable(server ${SOURCE_FILES}
         src/HttpPacket.cpp
         src/HttpPacket.h
         src/HTTPMETHOD.h
+        src/controllers/EchoController.cpp
+        src/controllers/EchoController.h
+        src/Globals.cpp
+        src/Globals.h
 )
 target_link_libraries(server pthread)

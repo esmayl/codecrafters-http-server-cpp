@@ -6,6 +6,8 @@
 #include <sys/types.h>
 
 #include "HttpPacket.h"
+#include "Globals.h"
+#include "controllers/EchoController.h"
 
 #ifdef _WIN64
 
@@ -20,8 +22,6 @@
 #endif
 
 int port = 4221;
-const char* successResponse = "HTTP/1.1 200 OK\r\n\r\n";
-const char* errorResponse = "HTTP/1.1 404 Not Found\r\n\r\n";
 
 HttpPacket ParseRequestHeader(const std::string & rawString);
 
@@ -124,15 +124,18 @@ int main(int argc, char **argv)
         HttpPacket resp = ParseRequestHeader(s);
 
         // std::cout << "Received: " << resp.GetEndpoint() << std::endl;
-
-        if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().empty())
+        if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().compare(0,4,"echo") == 0)
+        {
+            EchoController::SendResponse(clientSocket,resp);
+        }
+        else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().empty())
         {
             // Send a 200 success response when using GET and using no endpoint
-            send(clientSocket,successResponse,sizeof successResponse,0);
+            send(clientSocket,Globals::successResponse,sizeof Globals::successResponse,0);
         }
         else if(resp.GetRequestType() == HTTPMETHOD::GET)
         {
-            send(clientSocket,errorResponse,sizeof errorResponse,0);
+            send(clientSocket, Globals::errorResponse,sizeof Globals::errorResponse,0);
         }
 
         // send(clientSocket,resp,strlen(resp),0);
