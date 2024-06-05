@@ -63,6 +63,21 @@ HttpPacket::HttpPacket(std::string rawString)
 
     startEndpointChar+=2; // +1 to skip the /
     endpoint = splitString[0].substr(startEndpointChar,endEndPointChar-startEndpointChar);
+
+
+    for (size_t j=1;j < splitString->length();j++)
+    {
+        if(splitString[j].find("User-Agent") != -1)
+        {
+            int foundIndex = splitString[j].find(':');
+
+            if(foundIndex != -1 && foundIndex+2 < splitString[i].length())
+            {
+                userAgent = splitString[i].substr(foundIndex+2).c_str();
+            }
+        }
+    }
+
 }
 
 HTTPMETHOD HttpPacket::GetRequestType()
@@ -73,5 +88,10 @@ HTTPMETHOD HttpPacket::GetRequestType()
 std::string& HttpPacket::GetEndpoint()
 {
     return endpoint;
+}
+
+std::string & HttpPacket::GetUserAgent()
+{
+    return userAgent;
 }
 

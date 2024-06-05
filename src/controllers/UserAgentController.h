@@ -2,8 +2,8 @@
 // Created by esmayl on 05/06/2024.
 //
 
-#ifndef ECHOCONTROLLER_H
-#define ECHOCONTROLLER_H
+#ifndef USERAGENTCONTROLLER_H
+#define USERAGENTCONTROLLER_H
 
 #pragma once
 
@@ -13,6 +13,7 @@
 #include <cstring>
 #include <unistd.h>
 #include <sys/types.h>
+
 #include "../HttpPacket.h"
 #include "../Globals.h"
 
@@ -29,12 +30,9 @@
     #include <cstring>
 #endif
 
-
-
-class EchoController
+class UserAgentController
 {
     public:
-
         #ifdef _WIN64
             static void SendResponse(SOCKET socket, HttpPacket& packet);
         #else
@@ -44,4 +42,4 @@ class EchoController
 
 
 
-#endif //ECHOCONTROLLER_H
+#endif //USERAGENTCONTROLLER_H

@@ -8,6 +8,7 @@
 #include "HttpPacket.h"
 #include "Globals.h"
 #include "controllers/EchoController.h"
+#include "controllers/UserAgentController.h"
 
 #ifdef _WIN64
 
@@ -137,7 +138,11 @@ int main(int argc, char **argv)
         HttpPacket resp = ParseRequestHeader(s);
 
         // std::cout << "Received: " << resp.GetEndpoint() << std::endl;
-        if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().compare(0,4,"echo") == 0)
+        if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().compare(0,10,"user-agent") == 0)
+        {
+            UserAgentController::SendResponse(clientSocket,resp);
+        }
+        else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().compare(0,4,"echo") == 0)
         {
             EchoController::SendResponse(clientSocket,resp);
         }

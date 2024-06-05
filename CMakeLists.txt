@@ -17,5 +17,7 @@ add_executable(server ${SOURCE_FILES}
         src/controllers/EchoController.h
         src/Globals.cpp
         src/Globals.h
+        src/controllers/UserAgentController.cpp
+        src/controllers/UserAgentController.h
 )
 target_link_libraries(server pthread)

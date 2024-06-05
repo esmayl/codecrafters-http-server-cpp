@@ -10,7 +10,7 @@ enum class HTTPMETHOD
     GET,
     POST,
     PUT,
-    DELETE
+    DELETE,
 };
 
 #endif //HTTPTYPE_H

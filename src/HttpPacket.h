@@ -15,11 +15,14 @@ class HttpPacket
         explicit HttpPacket(std::string rawString);
         HTTPMETHOD GetRequestType();
         std::string& GetEndpoint();
+
+        std::string& GetUserAgent();
+
     private:
         HTTPMETHOD requestType;
         std::string endpoint;
         const char* httpVersion;
-        const char* userAgent;
+        std::string userAgent;
         const char* host;
 };
 
