@@ -18,7 +18,7 @@ const char* EchoController::BuildResponse(HttpPacket& packet)
     lastSlashIndex++; // ++ to move past the /
     size_t contentLength = packetEndpoint.length() - lastSlashIndex;
 
-    buildResponse.append(" ");
+    // buildResponse.append(std::string_literals::);
     buildResponse.append(std::to_string(contentLength));
     buildResponse.append("\r\n\r\n");
 
