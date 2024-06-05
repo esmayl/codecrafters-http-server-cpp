@@ -4,13 +4,14 @@
 
 #include "HttpPacket.h"
 
+#include <vector>
+
 HttpPacket::HttpPacket(std::string rawString)
 {
     ssize_t foundIndex = 0;
 
-    std::string splitString[5];
+    std::vector<std::string> splitString;
 
-    int i = 0;
     int startIndex = 0;
     while(foundIndex != -1)
     {
@@ -21,20 +22,11 @@ HttpPacket::HttpPacket(std::string rawString)
             break;
         }
 
-        splitString[i] = rawString.substr(startIndex,foundIndex-startIndex);
+        splitString.push_back(rawString.substr(startIndex,foundIndex-startIndex));
 
         startIndex = foundIndex;
         startIndex += 2;
         foundIndex++; // +1 to start searching further in the string
-
-        if(i < 4)
-        {
-            i++;
-        }
-        else
-        {
-            break;
-        }
     }
 
     if(splitString[0].find("GET") != -1)
@@ -65,15 +57,17 @@ HttpPacket::HttpPacket(std::string rawString)
     endpoint = splitString[0].substr(startEndpointChar,endEndPointChar-startEndpointChar);
 
 
-    for (size_t j=1;j < splitString->length();j++)
+    for (size_t j=1;j < splitString.size();j++)
     {
-        if(splitString[j].find("User-Agent") != -1)
+        if(splitString[j].compare(0,10,"User-Agent") == 0)
         {
-            int foundIndex = splitString[j].find(':');
+            int userAgentIndex = splitString[j].find(':');
 
-            if(foundIndex != -1 && foundIndex+2 < splitString[i].length())
+            if(userAgentIndex != -1 && userAgentIndex+2 < splitString[j].length())
             {
-                userAgent = splitString[i].substr(foundIndex+2).c_str();
+                int crlf = splitString[j].find("\r\n",userAgentIndex);
+                userAgent = splitString[j].substr(userAgentIndex+2,splitString[j].length()-crlf);
+                break;
             }
         }
     }

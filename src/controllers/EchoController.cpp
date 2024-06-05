@@ -9,7 +9,11 @@
     {
         const char* responseChar;
 
-        responseChar = Globals::BuildResponse(packet.GetEndpoint()).c_str();
+        std::string endpoint = packet.GetEndpoint();
+        size_t lastSlashIndex = endpoint.find_last_of('/');;
+        lastSlashIndex++; // ++ to move past the /
+
+        responseChar = Globals::BuildResponse(endpoint.substr(lastSlashIndex)).c_str();
 
         std::cout << "Sending: " <<responseChar<< std::endl;
 
@@ -22,11 +26,15 @@
     {
         const char* responseChar;
 
-        std::string test = Globals::BuildResponse(packet.GetEndpoint());
+        std::string endpoint = packet.GetEndpoint();
+        size_t lastSlashIndex = endpoint.find_last_of('/');;
+        lastSlashIndex++; // ++ to move past the /
 
-        std::cout << "Sending " << test.c_str() << std::endl;
+        endpoint = Globals::BuildResponse(endpoint.substr(lastSlashIndex));
 
-        send(socket,test.c_str(),test.size(),0);
+        std::cout << "Sending " << endpoint.c_str() << std::endl;
+
+        send(socket,endpoint.c_str(),endpoint.size(),0);
     }
 
 #endif

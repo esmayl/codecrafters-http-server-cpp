@@ -9,9 +9,9 @@
     {
         const char* responseChar;
 
-        responseChar = Globals::BuildResponse(packet.GetUserAgent()).c_str();
+        std::string tempString = Globals::BuildResponse(packet.GetUserAgent());
 
-        std::cout << "Sending: " <<responseChar<< std::endl;
+        std::cout << "Sending: " <<tempString<< std::endl;
 
         send(socket,responseChar,strlen(responseChar),0);
     }
