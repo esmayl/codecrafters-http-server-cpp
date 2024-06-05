@@ -43,11 +43,11 @@ std::string EchoController::BuildResponse(HttpPacket& packet)
     {
         const char* responseChar;
 
-        responseChar = BuildResponse(packet).c_str();
+        std::string test = BuildResponse(packet);
 
-        std::cout << "Sending " << responseChar << std::endl;
+        std::cout << "Sending " << test.c_str() << std::endl;
 
-        send(socket,responseChar,strlen(responseChar),0);
+        send(socket,test.c_str(),test.size(),0);
     }
 
 #endif
