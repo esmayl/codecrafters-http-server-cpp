@@ -214,6 +214,8 @@ int main(int argc, char **argv)
           newCharPointer[successLength] = '\r';
           newCharPointer[successLength+1] = '\n';
 
+          std::cout << "Sending success: " << newCharPointer << std::endl;
+
           // Send a 200 success response when using GET and using no endpoint
           send(connectedClient,Globals::successResponse,strlen(Globals::successResponse),0);
       }
