@@ -30,6 +30,19 @@ HttpPacket ParseRequestHeader(const std::string &rawString)
     return HttpPacket(rawString);
 }
 
+char* CreateEmptyResponse(const char* response)
+{
+    size_t responseLength = strlen(response);
+    char* tempCharPointer = new char[responseLength+2];
+
+    strcpy(tempCharPointer,Globals::successResponse);
+
+    tempCharPointer[responseLength] = '\r';
+    tempCharPointer[responseLength+1] = '\n';
+
+    return tempCharPointer;
+}
+
 int main(int argc, char **argv)
 {
 
@@ -130,26 +143,15 @@ int main(int argc, char **argv)
         }
         else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().empty())
         {
-            size_t successLength = strlen(Globals::successResponse);
-            char* newCharPointer = new char[successLength+2];
 
-            strcpy(newCharPointer,Globals::successResponse);
-
-            newCharPointer[successLength] = '\r';
-            newCharPointer[successLength+1] = '\n';
+            char* newCharPointer = CreateEmptyResponse(Globals::successResponse);
 
             // Send a 200 success response when using GET and using no endpoint
             send(clientSocket,newCharPointer,strlen(newCharPointer),0);
         }
         else if(resp.GetRequestType() == HTTPMETHOD::GET)
         {
-            size_t errorLength = strlen(Globals::errorResponse);
-            char* newCharPointer = new char[errorLength+2];
-
-            strcpy(newCharPointer,Globals::errorResponse);
-
-            newCharPointer[errorLength] = '\r';
-            newCharPointer[errorLength+1] = '\n';
+            char* newCharPointer = CreateEmptyResponse(Globals::errorResponse);
 
             send(clientSocket, newCharPointer,strlen(newCharPointer),0);
         }
@@ -206,28 +208,13 @@ int main(int argc, char **argv)
       }
       else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().empty())
       {
-          size_t successLength = strlen(Globals::successResponse);
-          char* newCharPointer = new char[successLength+2];
+          char* newCharPointer = CreateEmptyResponse(Globals::successResponse);
 
-          strcpy(newCharPointer,Globals::successResponse);
-
-          newCharPointer[successLength] = '\r';
-          newCharPointer[successLength+1] = '\n';
-
-          std::cout << "Sending success: " << newCharPointer << std::endl;
-
-          // Send a 200 success response when using GET and using no endpoint
           send(connectedClient,newCharPointer,strlen(newCharPointer),0);
       }
       else if(resp.GetRequestType() == HTTPMETHOD::GET)
       {
-          size_t errorLength = strlen(Globals::errorResponse);
-          char* newCharPointer = new char[errorLength+2];
-
-          strcpy(newCharPointer,Globals::errorResponse);
-
-          newCharPointer[errorLength] = '\r';
-          newCharPointer[errorLength+1] = '\n';
+          char* newCharPointer = CreateEmptyResponse(Globals::errorResponse);
 
           send(connectedClient,newCharPointer,strlen(newCharPointer),0);
       }
