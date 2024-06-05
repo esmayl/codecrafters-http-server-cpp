@@ -130,12 +130,32 @@ int main(int argc, char **argv)
         }
         else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().empty())
         {
+            size_t successLength = strlen(Globals::successResponse);
+            char* newCharPointer = new char[successLength+4];
+
+            strcpy(newCharPointer,Globals::successResponse);
+
+            newCharPointer[successLength] = '\\';
+            newCharPointer[successLength+1] = 'r';
+            newCharPointer[successLength+2] = '\\';
+            newCharPointer[successLength+3] = 'n';
+
             // Send a 200 success response when using GET and using no endpoint
-            send(clientSocket,Globals::successResponse,sizeof Globals::successResponse,0);
+            send(clientSocket,newCharPointer,strlen(newCharPointer),0);
         }
         else if(resp.GetRequestType() == HTTPMETHOD::GET)
         {
-            send(clientSocket, Globals::errorResponse,sizeof Globals::errorResponse,0);
+            size_t errorLength = strlen(Globals::errorResponse);
+            char* newCharPointer = new char[errorLength+4];
+
+            strcpy(newCharPointer,Globals::errorResponse);
+
+            newCharPointer[errorLength] = '\\';
+            newCharPointer[errorLength+1] = 'r';
+            newCharPointer[errorLength+2] = '\\';
+            newCharPointer[errorLength+3] = 'n';
+
+            send(clientSocket, newCharPointer,strlen(newCharPointer),0);
         }
 
         // send(clientSocket,resp,strlen(resp),0);
@@ -190,12 +210,32 @@ int main(int argc, char **argv)
       }
       else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().empty())
       {
+          size_t successLength = strlen(Globals::successResponse);
+          char* newCharPointer = new char[successLength+4];
+
+          strcpy(newCharPointer,Globals::successResponse);
+
+          newCharPointer[successLength] = '\\';
+          newCharPointer[successLength+1] = 'r';
+          newCharPointer[successLength+2] = '\\';
+          newCharPointer[successLength+3] = 'n';
+
           // Send a 200 success response when using GET and using no endpoint
           send(connectedClient,Globals::successResponse,strlen(Globals::successResponse),0);
       }
       else if(resp.GetRequestType() == HTTPMETHOD::GET)
       {
-          send(connectedClient,Globals::errorResponse,strlen(Globals::errorResponse),0);
+          size_t successLength = strlen(Globals::successResponse);
+          char* newCharPointer = new char[successLength+4];
+
+          strcpy(newCharPointer,Globals::errorResponse);
+
+          newCharPointer[successLength] = '\\';
+          newCharPointer[successLength+1] = 'r';
+          newCharPointer[successLength+2] = '\\';
+          newCharPointer[successLength+3] = 'n';
+
+          send(connectedClient,newCharPointer,strlen(newCharPointer),0);
       }
   }
   close(connectedClient);
