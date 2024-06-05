@@ -44,6 +44,7 @@ char* CreateEmptyResponse(const char* response)
     return tempCharPointer;
 }
 
+
 int main(int argc, char **argv)
 {
 
@@ -172,8 +173,8 @@ int main(int argc, char **argv)
     close(ListenSocket);
 
     WSACleanup();
-#else
 
+#else
 
   if (bind(server_fd, (struct sockaddr *) &server_addr, sizeof(server_addr)) != 0) {
     std::cerr << "Failed to bind to port 4221\n";
@@ -191,47 +192,63 @@ int main(int argc, char **argv)
   
   std::cout << "Waiting for a client to connect...\n";
 
-  int connectedClient = accept(server_fd, (struct sockaddr *) &client_addr,(socklen_t *)&client_addr_len );
-  std::cout << "Client connected\n";
-
-  char receiveBuffer[4096];
-
-  ssize_t readBytes = 0;
-  std::string s;
-
-  if((readBytes = recv(connectedClient,receiveBuffer,sizeof receiveBuffer - 1 ,0)) > 0)
+  while(true)
   {
-      receiveBuffer[readBytes] = '\0';
-      s.append(receiveBuffer,readBytes);
-
-      HttpPacket resp = ParseRequestHeader(s);
-
-      std::cout << "Received: " << resp.GetEndpoint() << std::endl;
-      if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().compare(0,10,"user-agent") == 0)
-      {
-          UserAgentController::SendResponse(connectedClient,resp);
-      }
-      else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().compare(0,4,"echo") == 0)
-      {
-          EchoController::SendResponse(connectedClient,resp);
-      }
-      else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().empty())
-      {
-          char* newCharPointer = CreateEmptyResponse(Globals::successResponse);
-
-          send(connectedClient,newCharPointer,strlen(newCharPointer),0);
-      }
-      else if(resp.GetRequestType() == HTTPMETHOD::GET)
-      {
-          char* newCharPointer = CreateEmptyResponse(Globals::errorResponse);
-
-          send(connectedClient,newCharPointer,strlen(newCharPointer),0);
-      }
+      int connectedClient;
+      AcceptConnection(client_addr, client_addr_len, connectedClient);
+      HandleRequest(receiveBuffer, readBytes, s, connectedClient);
   }
-  close(connectedClient);
+
   close(server_fd);
 
 #endif
 
   return 0;
 }
+
+#ifdef _WIN64
+#else
+    void HandleRequest(char receiveBuffer[4096], ssize_t &readBytes, std::string s, int connectedClient)
+    {
+        if((readBytes = recv(connectedClient,receiveBuffer,sizeof receiveBuffer - 1 ,0)) > 0)
+        {
+            receiveBuffer[readBytes] = '\0';
+            s.append(receiveBuffer,readBytes);
+
+            HttpPacket resp = ParseRequestHeader(s);
+
+            std::cout << "Received: " << resp.GetEndpoint() << std::endl;
+            if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().compare(0,10,"user-agent") == 0)
+            {
+                UserAgentController::SendResponse(connectedClient,resp);
+            }
+            else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().compare(0,4,"echo") == 0)
+            {
+                EchoController::SendResponse(connectedClient,resp);
+            }
+            else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().empty())
+            {
+                char* newCharPointer = CreateEmptyResponse(Globals::successResponse);
+
+                send(connectedClient,newCharPointer,strlen(newCharPointer),0);
+            }
+            else if(resp.GetRequestType() == HTTPMETHOD::GET)
+            {
+                char* newCharPointer = CreateEmptyResponse(Globals::errorResponse);
+
+                send(connectedClient,newCharPointer,strlen(newCharPointer),0);
+            }
+        }
+    }
+
+    void AcceptConnection(sockaddr_in client_addr, int client_addr_len, int &connectedClient)
+    {
+        connectedClient = accept(server_fd, (struct sockaddr *) &client_addr,(socklen_t *)&client_addr_len );
+        std::cout << "Client connected\n";
+
+        char receiveBuffer[4096];
+
+        ssize_t readBytes = 0;
+        std::string s;
+    }
+#endif
