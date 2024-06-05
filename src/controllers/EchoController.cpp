@@ -4,8 +4,6 @@
 
 #include "EchoController.h"
 
-#include "../Globals.h"
-
 const char* EchoController::BuildResponse(HttpPacket& packet)
 {
     std::string buildResponse;
@@ -23,6 +21,8 @@ const char* EchoController::BuildResponse(HttpPacket& packet)
     buildResponse.append("\r\n\r\n");
 
     buildResponse.append(packetEndpoint.substr(lastSlashIndex));
+
+    std::cout << "Made string: "<< buildResponse << std::endl;
 
     return buildResponse.c_str();
 }
@@ -47,7 +47,7 @@ const char* EchoController::BuildResponse(HttpPacket& packet)
 
         responseChar = BuildResponse(packet);
 
-        std::cout << "Sending " << strlen(responseChar) << std::endl;
+        std::cout << "Sending " << responseChar << std::endl;
 
         send(socket,responseChar,strlen(responseChar),0);
     }

@@ -4,7 +4,6 @@
 
 #ifndef ECHOCONTROLLER_H
 #define ECHOCONTROLLER_H
-#include "../HttpPacket.h"
 
 #pragma once
 
@@ -27,6 +26,8 @@
 #include <cstring>
 #include <unistd.h>
 #include <sys/types.h>
+#include "../HttpPacket.h"
+#include "../Globals.h"
 
 class EchoController
 {
