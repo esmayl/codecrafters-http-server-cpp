@@ -4,7 +4,7 @@
 
 #include "EchoController.h"
 
-const char* EchoController::BuildResponse(HttpPacket& packet)
+std::string EchoController::BuildResponse(HttpPacket& packet)
 {
     std::string buildResponse;
     buildResponse.append(Globals::successResponse);
@@ -22,9 +22,7 @@ const char* EchoController::BuildResponse(HttpPacket& packet)
 
     buildResponse.append(packetEndpoint.substr(lastSlashIndex));
 
-    std::cout << "Made string: "<< buildResponse << std::endl;
-
-    return buildResponse.c_str();
+    return buildResponse;
 }
 
 #ifdef _WIN64
@@ -32,7 +30,7 @@ const char* EchoController::BuildResponse(HttpPacket& packet)
     {
         const char* responseChar;
 
-        responseChar = BuildResponse(packet);
+        responseChar = BuildResponse(packet).c_str();
 
         std::cout << "Sending: " <<responseChar<< std::endl;
 
@@ -45,7 +43,7 @@ const char* EchoController::BuildResponse(HttpPacket& packet)
     {
         const char* responseChar;
 
-        responseChar = BuildResponse(packet);
+        responseChar = BuildResponse(packet).c_str();
 
         std::cout << "Sending " << responseChar << std::endl;
 

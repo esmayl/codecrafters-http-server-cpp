@@ -39,7 +39,7 @@ class EchoController
             static void SendResponse(int socket,HttpPacket& packet);
         #endif
 
-            static const char* BuildResponse(HttpPacket& packet);
+            static std::string BuildResponse(HttpPacket& packet);
 
 };
 
