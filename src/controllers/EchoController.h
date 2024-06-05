@@ -17,6 +17,7 @@
     #include <sys/socket.h>
     #include <arpa/inet.h>
     #include <netdb.h>
+    #include <cstring>
 #endif
 
 class EchoController
