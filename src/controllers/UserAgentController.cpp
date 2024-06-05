@@ -7,13 +7,11 @@
 #ifdef _WIN64
     void UserAgentController::SendResponse(SOCKET socket, HttpPacket &packet)
     {
-        const char* responseChar;
-
         std::string tempString = Globals::BuildResponse(packet.GetUserAgent());
 
         std::cout << "Sending: " <<tempString<< std::endl;
 
-        send(socket,responseChar,strlen(responseChar),0);
+        send(socket,tempString.c_str(),tempString.length(),0);
     }
 
 #else
