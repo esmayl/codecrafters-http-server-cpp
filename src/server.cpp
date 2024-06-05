@@ -215,9 +215,9 @@ int main(int argc, char **argv)
 
           strcpy(newCharPointer,Globals::successResponse);
 
-          newCharPointer[successLength] = '\\';
+          newCharPointer[successLength] = '\';
           newCharPointer[successLength+1] = 'r';
-          newCharPointer[successLength+2] = '\\';
+          newCharPointer[successLength+2] = '\';
           newCharPointer[successLength+3] = 'n';
 
           // Send a 200 success response when using GET and using no endpoint
@@ -230,9 +230,9 @@ int main(int argc, char **argv)
 
           strcpy(newCharPointer,Globals::errorResponse);
 
-          newCharPointer[errorLength] = '\\';
+          newCharPointer[errorLength] = '\';
           newCharPointer[errorLength+1] = 'r';
-          newCharPointer[errorLength+2] = '\\';
+          newCharPointer[errorLength+2] = '\';
           newCharPointer[errorLength+3] = 'n';
 
           send(connectedClient,newCharPointer,strlen(newCharPointer),0);
