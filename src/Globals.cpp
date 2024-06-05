@@ -13,7 +13,6 @@ std::string Globals::BuildResponse(const std::string &responseBody)
     buildResponse.append(successResponse);
     buildResponse.append("Content-Type: text/plain\r\nContent-Length:");
 
-    // buildResponse.append(std::string_literals::);
     buildResponse.append(std::to_string(responseBody.length()));
     buildResponse.append("\r\n\r\n");
 
