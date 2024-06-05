@@ -44,7 +44,7 @@ void EchoController::BuildResponse(HttpPacket& packet, const char* &responseChar
 
 #else
 
-    void EchoController::SendResponse(int socket,HttpPacket packet)
+    void EchoController::SendResponse(int socket,HttpPacket& packet)
     {
         const char *responseChar;
 
