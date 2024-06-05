@@ -19,13 +19,18 @@
     #include <netdb.h>
 #endif
 
-class EchoController {
+class EchoController
+{
     public:
+
         #ifdef _WIN64
-            static void SendResponse(SOCKET socket,HttpPacket packet);
+            static void SendResponse(SOCKET socket, HttpPacket& packet);
         #else
-            static void SendResponse(int socket,HttpPacket packet);
+            static void SendResponse(int socket,HttpPacket& packet);
         #endif
+
+            static void BuildResponse(HttpPacket& packet, const char *&responseChar);
+
 };
 
 

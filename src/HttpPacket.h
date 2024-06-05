@@ -9,18 +9,18 @@
 #include <string>
 #include "HTTPMETHOD.h"
 
-class HttpPacket {
-
-public:
-    explicit HttpPacket(std::string rawString);
-    HTTPMETHOD GetRequestType();
-    std::string& GetEndpoint();
-private:
-    HTTPMETHOD requestType;
-    std::string endpoint;
-    const char* httpVersion;
-    const char* userAgent;
-    const char* host;
+class HttpPacket
+{
+    public:
+        explicit HttpPacket(std::string rawString);
+        HTTPMETHOD GetRequestType();
+        std::string& GetEndpoint();
+    private:
+        HTTPMETHOD requestType;
+        std::string endpoint;
+        const char* httpVersion;
+        const char* userAgent;
+        const char* host;
 };
 
 
