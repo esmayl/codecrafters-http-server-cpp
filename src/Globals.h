@@ -4,7 +4,7 @@
 
 #ifndef GLOBALS_H
 #define GLOBALS_H
-#include <string>
+
 namespace Globals {
     extern const char* successResponse;
     extern const char* errorResponse;

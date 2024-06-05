@@ -4,9 +4,6 @@
 
 #include "EchoController.h"
 
-#include <iostream>
-#include <ostream>
-
 #include "../Globals.h"
 
 const char* EchoController::BuildResponse(HttpPacket& packet)

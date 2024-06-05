@@ -7,6 +7,7 @@
 #include "../HttpPacket.h"
 
 #pragma once
+
 #ifdef _WIN64
 
 #include <winsock2.h>
@@ -19,6 +20,13 @@
     #include <netdb.h>
     #include <cstring>
 #endif
+
+#include <iostream>
+#include <cstdlib>
+#include <string>
+#include <cstring>
+#include <unistd.h>
+#include <sys/types.h>
 
 class EchoController
 {
