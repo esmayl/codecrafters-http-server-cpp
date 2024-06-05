@@ -30,7 +30,7 @@ class EchoController
             static void SendResponse(int socket,HttpPacket& packet);
         #endif
 
-            static void BuildResponse(HttpPacket& packet, const char *&responseChar);
+            static void BuildResponse(HttpPacket& packet, const char *responseChar);
 
 };
 
