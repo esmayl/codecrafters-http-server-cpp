@@ -213,13 +213,15 @@ int main(int argc, char **argv)
     server_addr.sin_port = htons(port);
 
 #ifdef _WIN64
-    if (bind(serverSocket, (struct sockaddr *) &server_addr, sizeof(server_addr)) != 0) {
+    if (bind(serverSocket, (struct sockaddr *) &server_addr, sizeof(server_addr)) != 0)
+    {
         std::cerr << "Failed to bind to port 4221\n";
         return 1;
     }
 
     int connection_backlog = 5;
-    if (listen(serverSocket, connection_backlog) != 0) {
+    if (listen(serverSocket, connection_backlog) != 0)
+    {
         std::cerr << "listen failed\n";
         return 1;
     }
@@ -246,13 +248,15 @@ int main(int argc, char **argv)
 
 #else
 
-  if (bind(server_fd, (struct sockaddr *) &server_addr, sizeof(server_addr)) != 0) {
+  if (bind(server_fd, (struct sockaddr *) &server_addr, sizeof(server_addr)) != 0)
+  {
     std::cerr << "Failed to bind to port 4221\n";
     return 1;
   }
   
   int connection_backlog = 5;
-  if (listen(server_fd, connection_backlog) != 0) {
+  if (listen(server_fd, connection_backlog) != 0)
+  {
     std::cerr << "listen failed\n";
     return 1;
   }
@@ -260,13 +264,13 @@ int main(int argc, char **argv)
   struct sockaddr_in client_addr;
   int client_addr_len = sizeof(client_addr);
   
-  std::cout << "Waiting for a client to connect...\n"
-  std::vector<SOCKET> clients
+  std::cout << "Waiting for a client to connect...\n";
+  std::vector<SOCKET> clients;
 
   while(true)
   {
-      clients.push_back(AcceptConnection(server_fd))
-      HandleRequest(clients.back())
+      clients.push_back(AcceptConnection(server_fd));
+      HandleRequest(clients.back());
       clients.pop_back();
   }
 
