@@ -131,14 +131,12 @@ int main(int argc, char **argv)
         else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().empty())
         {
             size_t successLength = strlen(Globals::successResponse);
-            char* newCharPointer = new char[successLength+4];
+            char* newCharPointer = new char[successLength+2];
 
             strcpy(newCharPointer,Globals::successResponse);
 
-            newCharPointer[successLength] = '\\';
-            newCharPointer[successLength+1] = 'r';
-            newCharPointer[successLength+2] = '\\';
-            newCharPointer[successLength+3] = 'n';
+            newCharPointer[successLength] = '\r';
+            newCharPointer[successLength+1] = '\n';
 
             // Send a 200 success response when using GET and using no endpoint
             send(clientSocket,newCharPointer,strlen(newCharPointer),0);
@@ -146,14 +144,12 @@ int main(int argc, char **argv)
         else if(resp.GetRequestType() == HTTPMETHOD::GET)
         {
             size_t errorLength = strlen(Globals::errorResponse);
-            char* newCharPointer = new char[errorLength+4];
+            char* newCharPointer = new char[errorLength+2];
 
             strcpy(newCharPointer,Globals::errorResponse);
 
-            newCharPointer[errorLength] = '\\';
-            newCharPointer[errorLength+1] = 'r';
-            newCharPointer[errorLength+2] = '\\';
-            newCharPointer[errorLength+3] = 'n';
+            newCharPointer[errorLength] = '\r';
+            newCharPointer[errorLength+1] = '\n';
 
             send(clientSocket, newCharPointer,strlen(newCharPointer),0);
         }
@@ -211,14 +207,12 @@ int main(int argc, char **argv)
       else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().empty())
       {
           size_t successLength = strlen(Globals::successResponse);
-          char* newCharPointer = new char[successLength+4];
+          char* newCharPointer = new char[successLength+2];
 
           strcpy(newCharPointer,Globals::successResponse);
 
-          newCharPointer[successLength] = '\';
-          newCharPointer[successLength+1] = 'r';
-          newCharPointer[successLength+2] = '\';
-          newCharPointer[successLength+3] = 'n';
+          newCharPointer[successLength] = '\r';
+          newCharPointer[successLength+1] = '\n';
 
           // Send a 200 success response when using GET and using no endpoint
           send(connectedClient,Globals::successResponse,strlen(Globals::successResponse),0);
@@ -226,14 +220,12 @@ int main(int argc, char **argv)
       else if(resp.GetRequestType() == HTTPMETHOD::GET)
       {
           size_t errorLength = strlen(Globals::errorResponse);
-          char* newCharPointer = new char[errorLength+4];
+          char* newCharPointer = new char[errorLength+2];
 
           strcpy(newCharPointer,Globals::errorResponse);
 
-          newCharPointer[errorLength] = '\';
-          newCharPointer[errorLength+1] = 'r';
-          newCharPointer[errorLength+2] = '\';
-          newCharPointer[errorLength+3] = 'n';
+          newCharPointer[errorLength] = '\r';
+          newCharPointer[errorLength+1] = '\n';
 
           send(connectedClient,newCharPointer,strlen(newCharPointer),0);
       }
