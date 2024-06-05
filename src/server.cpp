@@ -225,15 +225,15 @@ int main(int argc, char **argv)
       }
       else if(resp.GetRequestType() == HTTPMETHOD::GET)
       {
-          size_t successLength = strlen(Globals::successResponse);
-          char* newCharPointer = new char[successLength+4];
+          size_t errorLength = strlen(Globals::errorResponse);
+          char* newCharPointer = new char[errorLength+4];
 
           strcpy(newCharPointer,Globals::errorResponse);
 
-          newCharPointer[successLength] = '\\';
-          newCharPointer[successLength+1] = 'r';
-          newCharPointer[successLength+2] = '\\';
-          newCharPointer[successLength+3] = 'n';
+          newCharPointer[errorLength] = '\\';
+          newCharPointer[errorLength+1] = 'r';
+          newCharPointer[errorLength+2] = '\\';
+          newCharPointer[errorLength+3] = 'n';
 
           send(connectedClient,newCharPointer,strlen(newCharPointer),0);
       }
