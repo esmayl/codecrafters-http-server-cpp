@@ -34,7 +34,7 @@ const char* EchoController::BuildResponse(HttpPacket& packet)
 
         responseChar = BuildResponse(packet);
 
-        std::cout << "Sending " <<responseChar<< std::endl;
+        std::cout << "Sending: " <<responseChar<< std::endl;
 
         send(socket,responseChar,strlen(responseChar),0);
     }
@@ -47,7 +47,7 @@ const char* EchoController::BuildResponse(HttpPacket& packet)
 
         responseChar = BuildResponse(packet);
 
-        std::cout << "Sending " <<responseChar<< std::endl;
+        std::cout << "Sending " << strlen(responseChar) << std::endl;
 
         send(socket,responseChar,strlen(responseChar),0);
     }
