@@ -21,7 +21,7 @@ add_executable(server ${SOURCE_FILES}
         src/Globals.h
         src/controllers/FileController.cpp
         src/controllers/FileController.h
-        src/Contenttypes.cpp
+        src/CONTENTTYPE.cpp
         src/CONTENTTYPE.h
 )
 target_link_libraries(server pthread)
