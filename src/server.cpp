@@ -166,7 +166,6 @@ int main(int argc, char **argv)
             SetupDirectory(argv[i+1]);
         }
     }
-
     // Flush after every std::cout / std::cerr
     std::cout << std::unitbuf;
     std::cerr << std::unitbuf;
