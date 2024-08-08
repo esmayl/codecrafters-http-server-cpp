@@ -13,6 +13,7 @@
 #include <cstring>
 #include <unistd.h>
 #include <sys/types.h>
+#include <utility>
 #include "../HttpPacket.h"
 #include "../Globals.h"
 
@@ -34,13 +35,18 @@ class FileController
 {
 
 public:
-
+    explicit FileController(std::string fileFolder);
 #ifdef _WIN64
     static void SendResponse(SOCKET socket, char* directoryRoot, HttpPacket& packet);
 #else
     static void SendResponse(int socket, char* directoryRoot, HttpPacket& packet);
 #endif
+
+private:
+    std::string fileFolder;
+    ~FileController();
 };
+
 
 
 
