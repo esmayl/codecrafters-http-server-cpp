@@ -6,6 +6,8 @@
 #define GLOBALS_H
 #include <string>
 
+#include "CONTENTTYPE.h"
+
 class HttpPacket;
 
 class Globals {
@@ -13,7 +15,9 @@ class Globals {
 public:
     static const char* successResponse;
     static const char* errorResponse;
+    static const char* contentType;
+    static const char* contentLength;
 
-    static std::string BuildResponse(const std::string& responseBody);
+    static std::string BuildResponse(const std::string& responseBody, CONTENTTYPE responseType);
 };
 #endif //GLOBALS_H

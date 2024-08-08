@@ -13,11 +13,11 @@
         size_t lastSlashIndex = endpoint.find_last_of('/');;
         lastSlashIndex++; // ++ to move past the /
 
-        responseChar = Globals::BuildResponse(endpoint.substr(lastSlashIndex)).c_str();
+        endpoint = Globals::BuildResponse(endpoint.substr(lastSlashIndex), CONTENTTYPE::PLAIN);
 
-        std::cout << "Sending: " <<responseChar<< std::endl;
+        std::cout << "Sending: " <<endpoint<< std::endl;
 
-        send(socket,responseChar,strlen(responseChar),0);
+        send(socket,endpoint.c_str(),static_cast<int>(endpoint.size()),0);
     }
 
 #else
@@ -30,11 +30,11 @@
         size_t lastSlashIndex = endpoint.find_last_of('/');;
         lastSlashIndex++; // ++ to move past the /
 
-        endpoint = Globals::BuildResponse(endpoint.substr(lastSlashIndex));
+        endpoint = Globals::BuildResponse(endpoint.substr(lastSlashIndex), CONTENTTYPE::PLAIN);
 
         std::cout << "Sending " << endpoint.c_str() << std::endl;
 
-        send(socket,endpoint.c_str(),endpoint.size(),0);
+        send(socket,endpoint.c_str(),static_cast<int>(endpoint.size()),0);
     }
 
 #endif

@@ -52,12 +52,12 @@ char* CreateEmptyResponse(const char* response)
         struct sockaddr_in client_addr;
         int client_addr_len = sizeof(client_addr);
 
-        return accept(serverSocket, (struct sockaddr *) &client_addr,(socklen_t *)&client_addr_len );
+        return accept(serverSocket, reinterpret_cast<sockaddr*>(&client_addr), &client_addr_len );
     }
 
     void HandleRequest(SOCKET connectedClient)
     {
-        char receiveBuffer[4096];
+        char receiveBuffer[1024];
 
         ssize_t readBytes = 0;
         std::string s;
@@ -82,13 +82,13 @@ char* CreateEmptyResponse(const char* response)
             {
                 char* newCharPointer = CreateEmptyResponse(Globals::successResponse);
 
-                send(connectedClient,newCharPointer,strlen(newCharPointer),0);
+                send(connectedClient,newCharPointer,static_cast<int>(strlen(newCharPointer)),0);
             }
             else if(resp.GetRequestType() == HTTPMETHOD::GET)
             {
                 char* newCharPointer = CreateEmptyResponse(Globals::errorResponse);
 
-                send(connectedClient,newCharPointer,strlen(newCharPointer),0);
+                send(connectedClient,newCharPointer,static_cast<int>(strlen(newCharPointer)),0);
             }
         }
         closesocket(connectedClient);
@@ -130,13 +130,13 @@ char* CreateEmptyResponse(const char* response)
             {
                 char* newCharPointer = CreateEmptyResponse(Globals::successResponse);
 
-                send(connectedClient,newCharPointer,strlen(newCharPointer),0);
+                send(connectedClient,newCharPointer,static_cast<int>(strlen(newCharPointer)),0);
             }
             else if(resp.GetRequestType() == HTTPMETHOD::GET)
             {
                 char* newCharPointer = CreateEmptyResponse(Globals::errorResponse);
 
-                send(connectedClient,newCharPointer,strlen(newCharPointer),0);
+                send(connectedClient,newCharPointer,static_cast<int>(strlen(newCharPointer)),0);
             }
         }
 
@@ -145,15 +145,34 @@ char* CreateEmptyResponse(const char* response)
 #endif
 
 
-int main(int argc, char **argv)
+void SetupDirectory(char* directoryName)
 {
 
-  // Flush after every std::cout / std::cerr
-  std::cout << std::unitbuf;
-  std::cerr << std::unitbuf;
-  
-  // You can use print statements as follows for debugging, they'll be visible when running tests.
-  std::cout << "Logs from your program will appear here!\n";
+}
+
+// argv == parameter
+// argc == amount of character executable call
+int main(int argc, char **argv)
+{
+    int i;
+    for (i = 0; i < argc; i++)
+    {
+        // printf("%s\n",argv[i]);
+
+        // Setup directory for using with FileController endpoint
+        if(strcmp(argv[i],"--directory") == 0 && i + 1 < argc)
+        {
+            printf("Setup directory: %s\n", argv[i+1]);
+            SetupDirectory(argv[i+1]);
+        }
+    }
+
+    // Flush after every std::cout / std::cerr
+    std::cout << std::unitbuf;
+    std::cerr << std::unitbuf;
+
+    // You can use print statements as follows for debugging, they'll be visible when running tests.
+    std::cout << "Logs from your program will appear here!\n";
 
 #ifdef _WIN64
 
@@ -242,7 +261,7 @@ int main(int argc, char **argv)
         clients.pop_back();
     }
 
-    close(serverSocket);
+    closesocket(serverSocket);
 
     WSACleanup();
 

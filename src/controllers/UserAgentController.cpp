@@ -7,9 +7,9 @@
 #ifdef _WIN64
     void UserAgentController::SendResponse(SOCKET socket, HttpPacket &packet)
     {
-        std::string tempString = Globals::BuildResponse(packet.GetUserAgent());
+        std::string tempString = Globals::BuildResponse(packet.GetUserAgent(), CONTENTTYPE::PLAIN);
 
-        std::cout << "Sending: " <<tempString<< std::endl;
+        std::cout << "Sending: " << tempString << std::endl;
 
         send(socket,tempString.c_str(),tempString.length(),0);
     }
@@ -18,11 +18,9 @@
 
     void UserAgentController::SendResponse(int socket, HttpPacket &packet)
     {
-        std::string responseString;
+        std::string responseString = Globals::BuildResponse(packet.GetUserAgent(),CONTENTTYPE::PLAIN);
 
-        responseString = Globals::BuildResponse(packet.GetUserAgent());
-
-        std::cout << "Sending: " <<responseString<< std::endl;
+        std::cout << "Sending: " << responseString << std::endl;
 
         send(socket,responseString.c_str(),responseString.length(),0);
     }
