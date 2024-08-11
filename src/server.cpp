@@ -1,5 +1,3 @@
-#pragma once
-
 #include <iostream>
 #include <string>
 #include <cstring>
@@ -149,7 +147,7 @@ int main(int argc, char **argv)
 
     const char reuse = 1;
 
-    if (setsockopt(serverSocketWrapper.socket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) \
+    if (setsockopt(serverSocketWrapper.socket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0)
     {
         std::cerr << "setsockopt failed\n";
         return 1;
