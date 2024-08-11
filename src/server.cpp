@@ -47,10 +47,17 @@ char* CreateEmptyResponse(const char* response)
 SocketWrapper AcceptConnection(SocketWrapper connectedClient)
 {
     struct sockaddr_in client_addr;
+
     int client_addr_len = sizeof(client_addr);
 
+#ifdef _WIN64
+    int casted_client_addr_len = sizeof(client_addr);
+#else
+    socklen_t* casted_client_addr_len = (socklen_t*)&client_addr_len;
+#endif
+
     SocketWrapper returnSocket;
-    returnSocket.socket = accept(connectedClient.socket, reinterpret_cast<sockaddr*>(&client_addr), &client_addr_len);
+    returnSocket.socket = accept(connectedClient.socket, reinterpret_cast<sockaddr*>(&client_addr), &casted_client_addr_len);
 
     return returnSocket;
 }
