@@ -53,7 +53,7 @@ SocketWrapper AcceptConnection(SocketWrapper connectedClient)
 #ifdef _WIN64
     int casted_client_addr_len = sizeof(client_addr);
 #else
-    socklen_t* casted_client_addr_len = (socklen_t*)&client_addr_len;
+    socklen_t casted_client_addr_len = client_addr_len;
 #endif
 
     SocketWrapper returnSocket;
