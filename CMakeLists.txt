@@ -25,5 +25,7 @@ add_executable(server ${SOURCE_FILES}
         src/CONTENTTYPE.h
         src/SocketWrapper.cpp
         src/SocketWrapper.h
+        src/WebServer.cpp
+        src/WebServer.h
 )
 target_link_libraries(server pthread)

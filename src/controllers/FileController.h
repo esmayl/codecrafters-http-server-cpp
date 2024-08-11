@@ -22,8 +22,8 @@ class FileController
 {
 
 public:
-    explicit FileController(std::string fileFolder);
-    static void SendResponse(SocketWrapper socketWrapper, char* directoryRoot, HttpPacket& packet);
+    FileController(std::string fileFolder);
+    void SendResponse(SocketWrapper socketWrapper,const char* fileLocation);
 
 private:
     std::string fileFolder;
