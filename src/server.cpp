@@ -44,13 +44,13 @@ char* CreateEmptyResponse(const char* response)
     return tempCharPointer;
 }
 
-SocketWrapper AcceptConnection(SOCKET connectedClient)
+SocketWrapper AcceptConnection(SocketWrapper connectedClient)
 {
     struct sockaddr_in client_addr;
     int client_addr_len = sizeof(client_addr);
 
     SocketWrapper returnSocket;
-    returnSocket.socket = accept(connectedClient, reinterpret_cast<sockaddr*>(&client_addr), &client_addr_len);
+    returnSocket.socket = accept(connectedClient.socket, reinterpret_cast<sockaddr*>(&client_addr), &client_addr_len);
 
     return returnSocket;
 }
@@ -128,7 +128,7 @@ int main(int argc, char **argv)
     // You can use print statements as follows for debugging, they'll be visible when running tests.
     std::cout << "Logs from your program will appear here!\n";
 
-
+#ifdef _WIN64
     WSADATA wsaData;
     int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (iResult != NO_ERROR)
@@ -136,11 +136,13 @@ int main(int argc, char **argv)
         wprintf(L"Error at WSAStartup()\n");
         return 1;
     }
+#endif
+
     SocketWrapper serverSocketWrapper;
 
     // Uncomment this block to pass the first stage
     serverSocketWrapper.socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (serverSocketWrapper.socket == INVALID_SOCKET)
+    if (serverSocketWrapper.socket == 0)
     {
         std::cerr << "Failed to create server socket\n";
         return 1;
@@ -184,7 +186,7 @@ int main(int argc, char **argv)
 
     while(true)
     {
-        clients.push_back(AcceptConnection(serverSocketWrapper.socket));
+        clients.push_back(AcceptConnection(serverSocketWrapper));
 
         HandleRequest(clients.back());
 
