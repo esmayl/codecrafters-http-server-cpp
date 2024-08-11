@@ -6,16 +6,24 @@
 
 #include "CONTENTTYPE.h"
 
-const char* Globals::successResponse = "HTTP/1.1 200 OK\r\n";
-const char* Globals::errorResponse = "HTTP/1.1 404 Not Found\r\n";
-const char* Globals::contentType = "Content-Type: ";
-const char* Globals::contentLength = "Content-Length: ";
+const char Globals::successResponse[] = "HTTP/1.1 200 OK\r\n";
+const char Globals::errorResponse[] = "HTTP/1.1 404 Not Found\r\n";
+const char Globals::contentType[] = "Content-Type: ";
+const char Globals::contentLength[] = "Content-Length: ";
 
-std::string Globals::BuildResponse(const std::string &responseBody, const CONTENTTYPE responseType)
+std::string Globals::BuildResponse(const std::string &responseBody, const CONTENTTYPE responseType, const bool succes)
 {
     std::string buildResponse;
 
-    buildResponse.append(successResponse);
+    if(succes)
+    {
+        buildResponse.append(successResponse);
+    }
+    else
+    {
+        buildResponse.append(errorResponse);
+    }
+
     buildResponse.append(contentType);
 
     switch (responseType)

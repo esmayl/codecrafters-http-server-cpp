@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <string>
 #include <cstring>
@@ -29,19 +31,6 @@ HttpPacket ParseRequestHeader(const std::string & rawString);
 HttpPacket ParseRequestHeader(const std::string &rawString)
 {
     return HttpPacket(rawString);
-}
-
-char* CreateEmptyResponse(const char* response)
-{
-    size_t responseLength = strlen(response);
-    char* tempCharPointer = new char[responseLength+2];
-
-    strcpy(tempCharPointer,response);
-
-    tempCharPointer[responseLength] = '\r';
-    tempCharPointer[responseLength+1] = '\n';
-
-    return tempCharPointer;
 }
 
 SocketWrapper AcceptConnection(SocketWrapper connectedClient)
@@ -87,15 +76,15 @@ void HandleRequest(SocketWrapper connectedClient)
         }
         else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().empty())
         {
-            char* newCharPointer = CreateEmptyResponse(Globals::successResponse);
+            std::string emptyResponse = Globals::BuildResponse("",CONTENTTYPE::PLAIN, true);
 
-            send(connectedClient.socket,newCharPointer,static_cast<int>(strlen(newCharPointer)),0);
+            send(connectedClient.socket,emptyResponse.c_str(),static_cast<int>(emptyResponse.length()),0);
         }
         else if(resp.GetRequestType() == HTTPMETHOD::GET)
         {
-            char* newCharPointer = CreateEmptyResponse(Globals::errorResponse);
+            std::string errorResponse = Globals::BuildResponse("",CONTENTTYPE::PLAIN, false);
 
-            send(connectedClient.socket,newCharPointer,static_cast<int>(strlen(newCharPointer)),0);
+            send(connectedClient.socket,errorResponse.c_str(),static_cast<int>(errorResponse.length()),0);
         }
     }
 
@@ -158,7 +147,7 @@ int main(int argc, char **argv)
     // Since the tester restarts your program quite often, setting SO_REUSEADDR
     // ensures that we don't run into 'Address already in use' errors
 
-    const char reuse = SO_KEEPALIVE;
+    const char reuse = 1;
 
     if (setsockopt(serverSocketWrapper.socket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) \
     {

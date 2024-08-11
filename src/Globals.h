@@ -13,11 +13,11 @@ class HttpPacket;
 class Globals {
 
 public:
-    static const char* successResponse;
-    static const char* errorResponse;
-    static const char* contentType;
-    static const char* contentLength;
+    static const char successResponse[];
+    static const char errorResponse[];
+    static const char contentType[];
+    static const char contentLength[];
 
-    static std::string BuildResponse(const std::string& responseBody, CONTENTTYPE responseType);
+    static std::string BuildResponse(const std::string& responseBody, const CONTENTTYPE responseType, const bool succes);
 };
 #endif //GLOBALS_H

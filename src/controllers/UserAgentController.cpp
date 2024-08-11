@@ -6,7 +6,7 @@
 
 void UserAgentController::SendResponse(SocketWrapper sockerWrapper, HttpPacket &packet)
 {
-    std::string tempString = Globals::BuildResponse(packet.GetUserAgent(), CONTENTTYPE::PLAIN);
+    std::string tempString = Globals::BuildResponse(packet.GetUserAgent(), CONTENTTYPE::PLAIN, true);
 
     std::cout << "Sending: " << tempString << std::endl;
 
