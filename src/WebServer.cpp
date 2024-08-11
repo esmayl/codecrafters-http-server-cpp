@@ -52,29 +52,29 @@ void WebServer::HandleRequest(SocketWrapper connectedClient)
 
         std::cout << "Custom Received: " << resp.GetEndpoint() << std::endl;
 
-        if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().compare(0,5,"files") == 0)
+        if(canUseFiles && resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().compare(0,5,"files") == 0)
         {
             this->fileControllerInstance->SendResponse(connectedClient,resp.GetEndpoint().substr(5+1).c_str());
         }
-        else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().compare(0,10,"user-agent") == 0)
-        {
-            UserAgentController::SendResponse(connectedClient,resp);
-        }
-        else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().compare(0,4,"echo") == 0)
-        {
-            EchoController::SendResponse(connectedClient,resp);
-        }
-        else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().empty())
-        {
-            std::string emptyResponse = Globals::BuildResponse("",CONTENTTYPE::PLAIN, true);
-
-            std::cout << "Custom Sending: " << emptyResponse.c_str() << std::endl;
-
-            send(connectedClient.socket,emptyResponse.c_str(),static_cast<int>(emptyResponse.length()),0);
-        }
+        // else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().compare(0,10,"user-agent") == 0)
+        // {
+        //     UserAgentController::SendResponse(connectedClient,resp);
+        // }
+        // else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().compare(0,4,"echo") == 0)
+        // {
+        //     EchoController::SendResponse(connectedClient,resp);
+        // }
+        // else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().empty())
+        // {
+        //     std::string emptyResponse = Globals::BuildResponse("",CONTENTTYPE::PLAIN, true);
+        //
+        //     std::cout << "Custom Sending: " << emptyResponse.c_str() << std::endl;
+        //
+        //     send(connectedClient.socket,emptyResponse.c_str(),static_cast<int>(emptyResponse.length()),0);
+        // }
         else if(resp.GetRequestType() == HTTPMETHOD::GET)
         {
-            std::string errorResponse = Globals::BuildResponse("",CONTENTTYPE::PLAIN, false);
+            std::string errorResponse = Globals::BuildResponse("",CONTENTTYPE::PLAIN, true);
 
             std::cout << "Custom Error Sending: " << errorResponse.c_str() << std::endl;
 
@@ -93,4 +93,6 @@ void WebServer::HandleRequest(SocketWrapper connectedClient)
 void WebServer::SetupDirectory(std::string folderRoot)
 {
     fileControllerInstance = new FileController(std::move(folderRoot));
+
+    canUseFiles = true;
 }

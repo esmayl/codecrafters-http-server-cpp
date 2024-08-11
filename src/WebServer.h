@@ -30,6 +30,7 @@ public:
 private:
     char* receiveBuffer;
     int receiveBufferSize;
+    bool canUseFiles = false;
     FileController* fileControllerInstance = nullptr;
 };
 
