@@ -66,7 +66,7 @@ void WebServer::HandleRequest(SocketWrapper connectedClient)
         }
         else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().empty())
         {
-            std::string emptyResponse = Globals::BuildResponse("123",CONTENTTYPE::PLAIN, true);
+            std::string emptyResponse = Globals::BuildResponse("",CONTENTTYPE::PLAIN, true);
 
             std::cout << "Custom Sending: " << emptyResponse.c_str() << std::endl;
 

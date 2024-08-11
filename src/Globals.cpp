@@ -33,8 +33,10 @@ std::string Globals::BuildResponse(const std::string &responseBody, const CONTEN
     {
         case CONTENTTYPE::PLAIN:
             buildResponse.append("text/plain\r\n");
+            break;
         case CONTENTTYPE::OCTET:
             buildResponse.append("application/octet-stream\r\n");
+            break;
     }
 
     buildResponse.append(contentLength);
