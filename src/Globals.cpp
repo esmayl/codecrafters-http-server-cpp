@@ -22,34 +22,27 @@ std::string Globals::BuildResponse(const std::string &responseBody, const CONTEN
     else
     {
         buildResponse.append(errorResponse);
-        buildResponse.append("\r\n");
+        buildResponse.append("\r\n\r\n");
 
         return buildResponse;
     }
 
-    if(responseBody.empty())
+    buildResponse.append(contentType);
+
+    switch (responseType)
     {
-        buildResponse.append("\r\n");
+        case CONTENTTYPE::PLAIN:
+            buildResponse.append("text/plain\r\n");
+        case CONTENTTYPE::OCTET:
+            buildResponse.append("application/octet-stream\r\n");
     }
-    else
-    {
-        buildResponse.append(contentType);
 
-        switch (responseType)
-        {
-            case CONTENTTYPE::PLAIN:
-                buildResponse.append("text/plain\r\n");
-            case CONTENTTYPE::OCTET:
-                buildResponse.append("application/octet-stream\r\n");
-        }
+    buildResponse.append(contentLength);
 
-        buildResponse.append(contentLength);
+    buildResponse.append(std::to_string(responseBody.length()));
+    buildResponse.append("\r\n\r\n");
 
-        buildResponse.append(std::to_string(responseBody.length()));
-        buildResponse.append("\r\n\r\n");
-
-        buildResponse.append(responseBody);
-    }
+    buildResponse.append(responseBody);
 
     return buildResponse;
 }
