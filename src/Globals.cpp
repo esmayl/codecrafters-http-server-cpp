@@ -22,14 +22,14 @@ std::string Globals::BuildResponse(const std::string &responseBody, const CONTEN
     else
     {
         buildResponse.append(errorResponse);
-        buildResponse.append("\r\n\r\n");
+        buildResponse.append("\r\n");
 
         return buildResponse;
     }
 
     if(responseBody.empty())
     {
-        buildResponse.append("\r\n\r\n");
+        buildResponse.append("\r\n");
     }
     else
     {
