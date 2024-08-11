@@ -135,7 +135,7 @@ int main(int argc, char **argv)
     SocketWrapper serverSocketWrapper;
 
     // Uncomment this block to pass the first stage
-    serverSocketWrapper.socket = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+    serverSocketWrapper.socket = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocketWrapper.socket == 0)
     {
         std::cerr << "Failed to create server socket\n";
