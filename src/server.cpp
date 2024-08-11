@@ -136,32 +136,22 @@ int main(int argc, char **argv)
         wprintf(L"Error at WSAStartup()\n");
         return 1;
     }
+    SocketWrapper serverSocketWrapper;
 
-#ifdef _WIN64
     // Uncomment this block to pass the first stage
-    SOCKET serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (serverSocket == INVALID_SOCKET)
+    serverSocketWrapper.socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (serverSocketWrapper.socket == INVALID_SOCKET)
     {
         std::cerr << "Failed to create server socket\n";
         return 1;
     }
-#else
-
-    // Uncomment this block to pass the first stage
-    int serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (serverSocket == INVALID_SOCKET)
-    {
-        std::cerr << "Failed to create server socket\n";
-        return 1;
-    }
-#endif
 
     // Since the tester restarts your program quite often, setting SO_REUSEADDR
     // ensures that we don't run into 'Address already in use' errors
 
     const char reuse = SO_KEEPALIVE;
 
-    if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) \
+    if (setsockopt(serverSocketWrapper.socket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) \
     {
         std::cerr << "setsockopt failed\n";
         return 1;
@@ -172,14 +162,14 @@ int main(int argc, char **argv)
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_port = htons(port);
 
-    if (bind(serverSocket, reinterpret_cast<struct sockaddr*>(&server_addr), sizeof(server_addr)) != 0)
+    if (bind(serverSocketWrapper.socket, reinterpret_cast<struct sockaddr*>(&server_addr), sizeof(server_addr)) != 0)
     {
         std::cerr << "Failed to bind to port " << port << "\n" << std::endl;
         return 1;
     }
 
     int connection_backlog = 5;
-    if (listen(serverSocket, connection_backlog) != 0)
+    if (listen(serverSocketWrapper.socket, connection_backlog) != 0)
     {
         std::cerr << "listen failed\n";
         return 1;
@@ -194,7 +184,7 @@ int main(int argc, char **argv)
 
     while(true)
     {
-        clients.push_back(AcceptConnection(serverSocket));
+        clients.push_back(AcceptConnection(serverSocketWrapper.socket));
 
         HandleRequest(clients.back());
 
@@ -202,11 +192,11 @@ int main(int argc, char **argv)
     }
 
     #ifdef _WIN64
-        closesocket(serverSocket);
+        closesocket(serverSocketWrapper.socket);
 
         WSACleanup();
     #else
-        close(server_fd);
+        close(serverSocketWrapper.socket);
     #endif
 
     return 0;
