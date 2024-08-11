@@ -9,15 +9,7 @@ FileController::FileController(std::string fileFolder)
     this->fileFolder = std::move(fileFolder);
 }
 
+void FileController::SendResponse(SocketWrapper socketWrapper, char* directoryRoot, HttpPacket& packet)
+{
 
-#ifdef _WIN64
-    void FileController::SendResponse(SOCKET socket, char* directoryRoot, HttpPacket& packet)
-    {
-
-    }
-#else
-    void FileController::SendResponse(int socket, char* directoryRoot, HttpPacket& packet)
-    {
-
-    }
-#endif
+}

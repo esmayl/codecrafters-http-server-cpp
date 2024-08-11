@@ -16,28 +16,13 @@
 
 #include "../HttpPacket.h"
 #include "../Globals.h"
+#include "../SocketWrapper.h"
 
-#ifdef _WIN64
-
-#include <winsock2.h>
-#include <Ws2tcpip.h>
-#include <stdio.h>
-
-#else
-    #include <sys/socket.h>
-    #include <arpa/inet.h>
-    #include <netdb.h>
-    #include <cstring>
-#endif
 
 class UserAgentController
 {
     public:
-        #ifdef _WIN64
-            static void SendResponse(SOCKET socket, HttpPacket& packet);
-        #else
-            static void SendResponse(int socket,HttpPacket& packet);
-        #endif
+        static void SendResponse(SocketWrapper socket, HttpPacket& packet);
 };
 
 

@@ -4,25 +4,11 @@
 
 #include "UserAgentController.h"
 
-#ifdef _WIN64
-    void UserAgentController::SendResponse(SOCKET socket, HttpPacket &packet)
-    {
-        std::string tempString = Globals::BuildResponse(packet.GetUserAgent(), CONTENTTYPE::PLAIN);
+void UserAgentController::SendResponse(SocketWrapper sockerWrapper, HttpPacket &packet)
+{
+    std::string tempString = Globals::BuildResponse(packet.GetUserAgent(), CONTENTTYPE::PLAIN);
 
-        std::cout << "Sending: " << tempString << std::endl;
+    std::cout << "Sending: " << tempString << std::endl;
 
-        send(socket,tempString.c_str(),tempString.length(),0);
-    }
-
-#else
-
-    void UserAgentController::SendResponse(int socket, HttpPacket &packet)
-    {
-        std::string responseString = Globals::BuildResponse(packet.GetUserAgent(),CONTENTTYPE::PLAIN);
-
-        std::cout << "Sending: " << responseString << std::endl;
-
-        send(socket,responseString.c_str(),responseString.length(),0);
-    }
-
-#endif
+    send(sockerWrapper.socket,tempString.c_str(),static_cast<int>(tempString.length()),0);
+}

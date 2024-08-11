@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include "../HttpPacket.h"
 #include "../Globals.h"
+#include "../SocketWrapper.h"
 
 #ifdef _WIN64
 
@@ -34,12 +35,7 @@
 class EchoController
 {
     public:
-
-        #ifdef _WIN64
-            static void SendResponse(SOCKET socket, HttpPacket& packet);
-        #else
-            static void SendResponse(int socket,HttpPacket& packet);
-        #endif
+        static void SendResponse(SocketWrapper socketWrapper, HttpPacket& packet);
 };
 
 

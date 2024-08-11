@@ -16,38 +16,17 @@
 #include <utility>
 #include "../HttpPacket.h"
 #include "../Globals.h"
-
-#ifdef _WIN64
-
-#include <winsock2.h>
-#include <Ws2tcpip.h>
-#include <stdio.h>
-
-#else
-    #include <sys/socket.h>
-    #include <arpa/inet.h>
-    #include <netdb.h>
-    #include <cstring>
-#endif
-
+#include "../SocketWrapper.h"
 
 class FileController
 {
 
 public:
     explicit FileController(std::string fileFolder);
-#ifdef _WIN64
-    static void SendResponse(SOCKET socket, char* directoryRoot, HttpPacket& packet);
-#else
-    static void SendResponse(int socket, char* directoryRoot, HttpPacket& packet);
-#endif
+    static void SendResponse(SocketWrapper socketWrapper, char* directoryRoot, HttpPacket& packet);
 
 private:
     std::string fileFolder;
-    ~FileController();
 };
-
-
-
 
 #endif //FILECONTROLLER_H
