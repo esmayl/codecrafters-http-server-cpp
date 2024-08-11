@@ -24,8 +24,10 @@ class SocketWrapper
     public:
     #ifdef _WIN64
         SOCKET socket;
+        char reuse;
     #else
         int socket;
+        int reuse;
     #endif
 
 };

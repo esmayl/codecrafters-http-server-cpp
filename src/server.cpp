@@ -145,9 +145,9 @@ int main(int argc, char **argv)
     // Since the tester restarts your program quite often, setting SO_REUSEADDR
     // ensures that we don't run into 'Address already in use' errors
 
-    const char reuse = 1;
+    serverSocketWrapper.reuse = 1;
 
-    if (setsockopt(serverSocketWrapper.socket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0)
+    if (setsockopt(serverSocketWrapper.socket, SOL_SOCKET, SO_REUSEADDR,&serverSocketWrapper.reuse , sizeof(serverSocketWrapper.reuse)) < 0)
     {
         std::cerr << "setsockopt failed\n";
         return 1;
@@ -164,8 +164,8 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    int connection_backlog = 5;
-    if (listen(serverSocketWrapper.socket, connection_backlog) != 0)
+    int max_connection_backlog = 5;
+    if (listen(serverSocketWrapper.socket, max_connection_backlog) != 0)
     {
         std::cerr << "listen failed\n";
         return 1;
