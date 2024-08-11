@@ -22,6 +22,9 @@ std::string Globals::BuildResponse(const std::string &responseBody, const CONTEN
     else
     {
         buildResponse.append(errorResponse);
+        buildResponse.append("\r\n\r\n");
+
+        return buildResponse;
     }
 
     buildResponse.append(contentType);
