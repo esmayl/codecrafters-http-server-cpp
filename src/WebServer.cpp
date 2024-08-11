@@ -50,7 +50,7 @@ void WebServer::HandleRequest(SocketWrapper connectedClient)
 
         HttpPacket resp = ParseRequestHeader(s);
 
-        // std::cout << "Received: " << resp.GetEndpoint() << std::endl;
+        std::cout << "Received: " << resp.GetEndpoint() << std::endl;
 
         if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().compare(0,5,"files") == 0)
         {
