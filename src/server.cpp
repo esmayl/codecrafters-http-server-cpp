@@ -32,7 +32,7 @@ int main(int argc, char **argv)
             else
             {
                 printf("Directory '%s\n' does not exist", argv[i+1]);
-                return 1;
+                // return 1;
             }
             break;
         }
