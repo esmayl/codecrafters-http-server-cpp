@@ -4,15 +4,20 @@
 
 #include "HttpPacket.h"
 
+#include <iostream>
 #include <vector>
 
 HttpPacket::HttpPacket(std::string rawString)
 {
+    contentLength = 0;
+
     ssize_t foundIndex = 0;
 
     std::vector<std::string> splitString;
 
+    int headerLength = 0;
     int startIndex = 0;
+
     while(foundIndex != -1)
     {
         foundIndex = rawString.find("\r\n",foundIndex);
@@ -21,12 +26,20 @@ HttpPacket::HttpPacket(std::string rawString)
         {
             break;
         }
+        std::string line = rawString.substr(startIndex,foundIndex-startIndex);
 
-        splitString.push_back(rawString.substr(startIndex,foundIndex-startIndex));
+        if(line.find("Content-Length") != std::string::npos)
+        {
+            contentLength = std::atoi(line.substr(line.find(':')+1).c_str());
+        }
+
+        splitString.push_back(line);
 
         startIndex = foundIndex;
         startIndex += 2;
         foundIndex++; // +1 to start searching further in the string
+
+        headerLength+=line.size()+2;
     }
 
     if(splitString[0].find("GET") != -1)
@@ -36,6 +49,10 @@ HttpPacket::HttpPacket(std::string rawString)
     if(splitString[0].find("POST") != -1)
     {
         requestType = HTTPMETHOD::POST;
+
+        body = rawString.substr(headerLength+4,contentLength).c_str(); // +4 to skip the /r/n/r/n
+
+        std::cout<< "Body: "<< body << std::endl;
     }
     if(splitString[0].find("PUT") != -1)
     {
@@ -67,11 +84,9 @@ HttpPacket::HttpPacket(std::string rawString)
             {
                 int crlf = splitString[j].find("\r\n",userAgentIndex);
                 userAgent = splitString[j].substr(userAgentIndex+2,splitString[j].length()-crlf);
-                break;
             }
         }
     }
-
 }
 
 HTTPMETHOD HttpPacket::GetRequestType()

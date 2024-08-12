@@ -7,11 +7,11 @@ ThreadPool::ThreadPool(size_t numThreads)
 {
     stop = false;
 
-    // Just create empty elments in the workers array, haveing the same structure as a non empty element
     for(size_t i =0;i<numThreads;i++)
     {
         workers.emplace_back([this]
         {
+            // internal thread loop, checks to see if it can execute a task based on lock and tasks list
             while(true)
             {
                 std::function<void()> task;

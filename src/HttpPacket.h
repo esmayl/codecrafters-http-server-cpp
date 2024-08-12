@@ -25,6 +25,8 @@ class HttpPacket
         const char* httpVersion;
         std::string userAgent;
         const char* host;
+        int contentLength;
+        const char* body;
 };
 
 
