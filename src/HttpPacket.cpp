@@ -50,9 +50,9 @@ HttpPacket::HttpPacket(std::string rawString)
     {
         requestType = HTTPMETHOD::POST;
 
-        body = rawString.substr(headerLength+4,contentLength).c_str(); // +4 to skip the /r/n/r/n
+        body = rawString.substr(headerLength,contentLength).c_str(); // +4 to skip the /r/n/r/n
 
-        std::cout<< "Body: "<< body << std::endl;
+        std::cout<< "Body: "<< rawString.substr(headerLength,contentLength) << std::endl;
     }
     if(splitString[0].find("PUT") != -1)
     {
