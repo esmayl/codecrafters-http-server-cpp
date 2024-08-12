@@ -12,7 +12,7 @@ file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 add_executable(server ${SOURCE_FILES}
         src/HttpPacket.cpp
         src/HttpPacket.h
-        src/HTTPMETHOD.h
+        src/enums/HTTPMETHOD.h
         src/controllers/EchoController.cpp
         src/controllers/EchoController.h
         src/controllers/UserAgentController.cpp
@@ -21,11 +21,13 @@ add_executable(server ${SOURCE_FILES}
         src/Globals.h
         src/controllers/FileController.cpp
         src/controllers/FileController.h
-        src/CONTENTTYPE.cpp
-        src/CONTENTTYPE.h
+        src/enums/CONTENTTYPE.cpp
+        src/enums/CONTENTTYPE.h
         src/SocketWrapper.cpp
         src/SocketWrapper.h
         src/WebServer.cpp
         src/WebServer.h
+        src/utilities/ThreadPool.cpp
+        src/utilities/ThreadPool.h
 )
 target_link_libraries(server pthread)

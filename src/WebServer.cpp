@@ -4,10 +4,10 @@
 
 #include "WebServer.h"
 
-#include <memory>
-#include <thread>
 
-WebServer::WebServer(int port)
+
+
+WebServer::WebServer(int port): threadPool(30)
 {
     this->port = port;
 }
@@ -36,14 +36,11 @@ void WebServer::AcceptConnection()
     returnSocket.reuse = 1;
     if (returnSocket.socket >= 0)
     {
-        // Check if accept was successful
-        std::thread([this](SocketWrapper socket)
-        {
-            HandleRequest(&socket);
-        },
-        std::move(returnSocket))
-        .detach();
 
+        threadPool.Enqueue([this,returnSocket]() mutable
+        {
+            HandleRequest(&returnSocket);
+        });
     }
     else
     {

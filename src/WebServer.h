@@ -10,12 +10,16 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <memory>
+#include <thread>
 
 #include "HttpPacket.h"
 #include "SocketWrapper.h"
 #include "controllers/FileController.h"
 #include "controllers/EchoController.h"
 #include "controllers/UserAgentController.h"
+#include "utilities/ThreadPool.h"
+#include "enums/HTTPMETHOD.h"
 
 class WebServer
 {
@@ -34,6 +38,7 @@ private:
     bool canUseFiles = false;
     SocketWrapper serverSocketWrapper;
     std::unique_ptr<FileController> fileControllerInstance;
+    ThreadPool threadPool;
 };
 
 

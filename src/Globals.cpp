@@ -4,8 +4,6 @@
 
 #include "Globals.h"
 
-#include "CONTENTTYPE.h"
-
 const char Globals::successResponse[] = "HTTP/1.1 200 OK\r\n";
 const char Globals::errorResponse[] = "HTTP/1.1 404 Not Found\r\n";
 const char Globals::contentType[] = "Content-Type: ";

@@ -7,7 +7,8 @@
 
 #pragma once
 #include <string>
-#include "HTTPMETHOD.h"
+
+#include "enums/HTTPMETHOD.h"
 
 class HttpPacket
 {
