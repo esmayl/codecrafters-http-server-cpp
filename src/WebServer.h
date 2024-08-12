@@ -7,7 +7,9 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "HttpPacket.h"
 #include "SocketWrapper.h"
@@ -20,18 +22,18 @@ class WebServer
 public:
     int port;
 
-    WebServer(int port, int receiveBufferSize);
+    explicit WebServer(int port);
 
     static HttpPacket ParseRequestHeader(const std::string &rawString);
-    static SocketWrapper AcceptConnection(SocketWrapper connectedClient);
-    void HandleRequest(SocketWrapper connectedClient);
+    int Start();
+    void AcceptConnection();
+    void HandleRequest(SocketWrapper* connectedClient);
     void SetupDirectory(std::string folderRoot);
 
 private:
-    char* receiveBuffer;
-    int receiveBufferSize;
     bool canUseFiles = false;
-    FileController* fileControllerInstance = nullptr;
+    SocketWrapper serverSocketWrapper;
+    std::unique_ptr<FileController> fileControllerInstance;
 };
 
 

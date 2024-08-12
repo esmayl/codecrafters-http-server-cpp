@@ -4,7 +4,7 @@
 
 #include "EchoController.h"
 
-void EchoController::SendResponse(SocketWrapper socketWrapper, HttpPacket& packet)
+void EchoController::SendResponse(SocketWrapper* socketWrapper, HttpPacket& packet)
 {
     std::string endpoint = packet.GetEndpoint();
     size_t lastSlashIndex = endpoint.find_last_of('/');;
@@ -14,5 +14,5 @@ void EchoController::SendResponse(SocketWrapper socketWrapper, HttpPacket& packe
 
     std::cout << "Sending: " <<endpoint<< std::endl;
 
-    send(socketWrapper.socket,endpoint.c_str(),static_cast<int>(endpoint.size()),0);
+    send(socketWrapper->socket,endpoint.c_str(),static_cast<int>(endpoint.size()),0);
 }

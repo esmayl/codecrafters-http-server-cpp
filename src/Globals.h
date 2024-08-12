@@ -17,6 +17,7 @@ public:
     static const char errorResponse[];
     static const char contentType[];
     static const char contentLength[];
+    static const char connectionClose[];
 
     static std::string BuildResponse(const std::string& responseBody, const CONTENTTYPE responseType, const bool succes);
 };

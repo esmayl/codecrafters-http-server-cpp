@@ -23,7 +23,7 @@ class FileController
 
 public:
     FileController(std::string fileFolder);
-    void SendResponse(SocketWrapper socketWrapper,const char* fileLocation);
+    void SendResponse(SocketWrapper* socketWrapper, const char* fileLocation);
 
 private:
     std::string fileFolder;

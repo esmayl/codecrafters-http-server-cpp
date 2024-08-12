@@ -11,7 +11,7 @@ FileController::FileController(std::string fileFolder)
     this->fileFolder = std::move(fileFolder);
 }
 
-void FileController::SendResponse(SocketWrapper socketWrapper, const char* fileLocation)
+void FileController::SendResponse(SocketWrapper* socketWrapper, const char* fileLocation)
 {
     std::string fileContent;
     std::string tempString;
@@ -38,5 +38,5 @@ void FileController::SendResponse(SocketWrapper socketWrapper, const char* fileL
 
     std::cout << "Sending: " << tempString << std::endl;
 
-    send(socketWrapper.socket,tempString.c_str(),static_cast<int>(tempString.length()),0);
+    send(socketWrapper->socket,tempString.c_str(),static_cast<int>(tempString.length()),0);
 }

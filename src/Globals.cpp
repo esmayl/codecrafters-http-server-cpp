@@ -22,7 +22,7 @@ std::string Globals::BuildResponse(const std::string &responseBody, const CONTEN
     else
     {
         buildResponse.append(errorResponse);
-        buildResponse.append("\r\n\r\n");
+        buildResponse.append("\r\n");
 
         return buildResponse;
     }
@@ -44,7 +44,14 @@ std::string Globals::BuildResponse(const std::string &responseBody, const CONTEN
     buildResponse.append(std::to_string(responseBody.length()));
     buildResponse.append("\r\n\r\n");
 
-    buildResponse.append(responseBody);
+    if(!responseBody.empty())
+    {
+        buildResponse.append(responseBody);
+    }
+    else
+    {
+        buildResponse.append("\r\n");
+    }
 
     return buildResponse;
 }
