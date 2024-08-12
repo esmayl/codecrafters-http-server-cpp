@@ -15,8 +15,8 @@ HttpPacket::HttpPacket(std::string rawString)
 
     std::vector<std::string> splitString;
 
-    int headerLength = 0;
-    int startIndex = 0;
+    size_t headerLength = 0;
+    ssize_t startIndex = 0;
 
     while(foundIndex != -1)
     {
@@ -30,7 +30,7 @@ HttpPacket::HttpPacket(std::string rawString)
 
         if(line.find("Content-Length") != std::string::npos)
         {
-            contentLength = std::atoi(line.substr(line.find(':')+1).c_str());
+            contentLength = std::stoll(line.substr(line.find(':')+1));
         }
 
         splitString.push_back(line);
@@ -64,8 +64,8 @@ HttpPacket::HttpPacket(std::string rawString)
     }
 
 
-    int startEndpointChar = 0;
-    int endEndPointChar = 0;
+    size_t startEndpointChar = 0;
+    size_t endEndPointChar = 0;
 
     startEndpointChar = splitString[0].find(' ',startEndpointChar);
     endEndPointChar = splitString[0].find(' ',startEndpointChar+1);
@@ -78,11 +78,11 @@ HttpPacket::HttpPacket(std::string rawString)
     {
         if(splitString[j].compare(0,10,"User-Agent") == 0)
         {
-            int userAgentIndex = splitString[j].find(':');
+            size_t userAgentIndex = splitString[j].find(':');
 
             if(userAgentIndex != -1 && userAgentIndex+2 < splitString[j].length())
             {
-                int crlf = splitString[j].find("\r\n",userAgentIndex);
+                size_t crlf = splitString[j].find("\r\n",userAgentIndex);
                 userAgent = splitString[j].substr(userAgentIndex+2,splitString[j].length()-crlf);
             }
         }
@@ -102,5 +102,15 @@ std::string& HttpPacket::GetEndpoint()
 std::string & HttpPacket::GetUserAgent()
 {
     return userAgent;
+}
+
+const char* HttpPacket::GetBody()
+{
+    return body;
+}
+
+std::streamsize HttpPacket::GetBodyLength()
+{
+    return contentLength;
 }
 

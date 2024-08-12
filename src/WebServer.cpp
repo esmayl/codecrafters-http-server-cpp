@@ -136,33 +136,40 @@ void WebServer::HandleRequest(SocketWrapper* connectedClient)
         receiveBuffer[readBytes] = '\0';
         s.append(receiveBuffer,readBytes);
 
-        HttpPacket resp = ParseRequestHeader(s);
+        HttpPacket requestPacket = ParseRequestHeader(s);
 
-        std::cout << "Custom Received: " << resp.GetEndpoint() << std::endl;
+        std::cout << "Custom Received: " << requestPacket.GetEndpoint() << std::endl;
 
-        if(canUseFiles && resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().compare(0,5,"files") == 0)
+        if(canUseFiles && requestPacket.GetEndpoint().compare(0,5,"files") == 0)
         {
-            this->fileControllerInstance->SendResponse(connectedClient,resp.GetEndpoint().substr(5+1).c_str());
+            if(requestPacket.GetRequestType() == HTTPMETHOD::GET)
+            {
+                this->fileControllerInstance->GetResponse(connectedClient,requestPacket.GetEndpoint().substr(5+1).c_str());
+            }
+            else if(requestPacket.GetRequestType() == HTTPMETHOD::POST)
+            {
+                this->fileControllerInstance->PostResponse(connectedClient,requestPacket.GetEndpoint().substr(5+1).c_str(), requestPacket.GetBody(), requestPacket.GetBodyLength());
+            }
         }
-        else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().compare(0,10,"user-agent") == 0)
+        else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && requestPacket.GetEndpoint().compare(0,10,"user-agent") == 0)
         {
-            UserAgentController::SendResponse(connectedClient,resp);
+            UserAgentController::SendResponse(connectedClient,requestPacket);
         }
-        else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().compare(0,4,"echo") == 0)
+        else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && requestPacket.GetEndpoint().compare(0,4,"echo") == 0)
         {
-            EchoController::SendResponse(connectedClient,resp);
+            EchoController::SendResponse(connectedClient,requestPacket);
         }
-        else if(resp.GetRequestType() == HTTPMETHOD::GET && resp.GetEndpoint().empty())
+        else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && requestPacket.GetEndpoint().empty())
         {
-            std::string emptyResponse = Globals::BuildResponse("",CONTENTTYPE::PLAIN, true);
+            std::string emptyResponse = Globals::BuildResponse(Globals::getSuccessResponse,"", CONTENTTYPE::PLAIN, true);
 
             std::cout << "Custom Sending: " << emptyResponse.c_str() << std::endl;
 
             send(connectedClient->socket,emptyResponse.c_str(),static_cast<int>(emptyResponse.length()),0);
         }
-        else if(resp.GetRequestType() == HTTPMETHOD::GET)
+        else if(requestPacket.GetRequestType() == HTTPMETHOD::GET)
         {
-            std::string errorResponse = Globals::BuildResponse("",CONTENTTYPE::PLAIN, false);
+            std::string errorResponse = Globals::BuildResponse(Globals::errorResponse,"", CONTENTTYPE::PLAIN, false);
 
             std::cout << "Custom Error Sending: " << errorResponse.c_str() << std::endl;
 

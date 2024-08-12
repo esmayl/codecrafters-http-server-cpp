@@ -16,16 +16,16 @@ class HttpPacket
         explicit HttpPacket(std::string rawString);
         HTTPMETHOD GetRequestType();
         std::string& GetEndpoint();
-
         std::string& GetUserAgent();
-
+        const char* GetBody();
+        std::streamsize GetBodyLength();
     private:
         HTTPMETHOD requestType;
         std::string endpoint;
         const char* httpVersion;
         std::string userAgent;
         const char* host;
-        int contentLength;
+        std::streamsize contentLength;
         const char* body;
 };
 

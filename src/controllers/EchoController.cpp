@@ -10,7 +10,7 @@ void EchoController::SendResponse(SocketWrapper* socketWrapper, HttpPacket& pack
     size_t lastSlashIndex = endpoint.find_last_of('/');;
     lastSlashIndex++; // ++ to move past the /
 
-    endpoint = Globals::BuildResponse(endpoint.substr(lastSlashIndex), CONTENTTYPE::PLAIN, true);
+    endpoint = Globals::BuildResponse(Globals::getSuccessResponse, endpoint.substr(lastSlashIndex), CONTENTTYPE::PLAIN, true);
 
     std::cout << "Sending: " <<endpoint<< std::endl;
 
