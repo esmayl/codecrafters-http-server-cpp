@@ -43,6 +43,7 @@ void WebServer::AcceptConnection()
         },
         std::move(returnSocket))
         .detach();
+
     }
     else
     {
