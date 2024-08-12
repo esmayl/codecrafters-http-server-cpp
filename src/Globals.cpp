@@ -5,7 +5,7 @@
 #include "Globals.h"
 
 const char Globals::getSuccessResponse[] = "HTTP/1.1 200 OK\r\n";
-const char Globals::postSuccessResponse[] = "HTTP/1.1 201 Created\r\n\r\n";
+const char Globals::postSuccessResponse[] = "HTTP/1.1 201 Created\r\n";
 const char Globals::errorResponse[] = "HTTP/1.1 404 Not Found\r\n";
 const char Globals::contentType[] = "Content-Type: ";
 const char Globals::contentLength[] = "Content-Length: ";

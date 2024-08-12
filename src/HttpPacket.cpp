@@ -50,9 +50,10 @@ HttpPacket::HttpPacket(std::string rawString)
     {
         requestType = HTTPMETHOD::POST;
 
-        body = rawString.substr(headerLength,contentLength).c_str(); // +4 to skip the /r/n/r/n
+        body = new char[contentLength+1];
+        std::strcpy(body,rawString.substr(headerLength,contentLength).c_str());
 
-        std::cout<< "Body: "<< rawString.substr(headerLength,contentLength) << std::endl;
+        body += '\0';
     }
     if(splitString[0].find("PUT") != -1)
     {
@@ -104,13 +105,13 @@ std::string & HttpPacket::GetUserAgent()
     return userAgent;
 }
 
-const char* HttpPacket::GetBody()
+char* HttpPacket::GetBody()
 {
     return body;
 }
 
-std::streamsize HttpPacket::GetBodyLength()
+std::streamsize* HttpPacket::GetBodyLength()
 {
-    return contentLength;
+    return &contentLength;
 }
 

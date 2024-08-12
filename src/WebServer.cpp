@@ -7,7 +7,7 @@
 
 
 
-WebServer::WebServer(int port): threadPool(30)
+WebServer::WebServer(int port): threadPool(5)
 {
     this->port = port;
 }
@@ -92,7 +92,7 @@ int WebServer::Start()
         return 1;
     }
 
-    int max_connection_backlog = 20;
+    int max_connection_backlog = 5;
     if (listen(serverSocketWrapper.socket, max_connection_backlog) != 0)
     {
         std::cerr << "listen failed\n";
@@ -131,8 +131,6 @@ void WebServer::HandleRequest(SocketWrapper* connectedClient)
 
     if((readBytes = recv(connectedClient->socket,receiveBuffer,sizeof(receiveBuffer) - 1,0)) > 0)
     {
-        std::cout << "Custom Received1: " << readBytes << std::endl;
-
         receiveBuffer[readBytes] = '\0';
         s.append(receiveBuffer,readBytes);
 

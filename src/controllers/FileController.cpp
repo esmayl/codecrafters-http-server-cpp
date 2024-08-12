@@ -43,7 +43,7 @@ void FileController::GetResponse(SocketWrapper* socketWrapper, const char* fileL
     send(socketWrapper->socket,tempString.c_str(),static_cast<int>(tempString.length()),0);
 }
 
-void FileController::PostResponse(SocketWrapper* socketWrapper, const char* fileLocation, const char* dataToWrite, std::streamsize dataLength)
+void FileController::PostResponse(SocketWrapper* socketWrapper, const char* fileLocation, char* dataToWrite, std::streamsize* dataLength)
 {
     std::string filePath;
 
@@ -53,8 +53,9 @@ void FileController::PostResponse(SocketWrapper* socketWrapper, const char* file
     std::ofstream outputFile(filePath);
 
     std::cout << "Opening file:" << filePath << std::endl;
+    std::cout << "Writing: " << dataToWrite << std::endl;
 
-    outputFile.write(dataToWrite,dataLength);
+    outputFile.write(dataToWrite,*dataLength);
 
     outputFile.close();
 

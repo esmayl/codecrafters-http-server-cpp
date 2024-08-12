@@ -7,6 +7,7 @@
 
 #pragma once
 #include <string>
+#include <cstring>  // For std::strcpy
 
 #include "enums/HTTPMETHOD.h"
 
@@ -14,19 +15,21 @@ class HttpPacket
 {
     public:
         explicit HttpPacket(std::string rawString);
+
         HTTPMETHOD GetRequestType();
         std::string& GetEndpoint();
         std::string& GetUserAgent();
-        const char* GetBody();
-        std::streamsize GetBodyLength();
+        std::streamsize* GetBodyLength();
+        char* GetBody();
+
     private:
         HTTPMETHOD requestType;
         std::string endpoint;
-        const char* httpVersion;
         std::string userAgent;
-        const char* host;
         std::streamsize contentLength;
-        const char* body;
+        const char* httpVersion;
+        const char* host;
+        char* body;
 };
 
 
