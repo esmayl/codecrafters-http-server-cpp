@@ -4,14 +4,13 @@
 
 #include "Globals.h"
 
-#include "HttpPacket.h"
-
 const char Globals::getSuccessResponse[] = "HTTP/1.1 200 OK\r\n";
 const char Globals::postSuccessResponse[] = "HTTP/1.1 201 Created\r\n";
 const char Globals::errorResponse[] = "HTTP/1.1 404 Not Found\r\n";
 const char Globals::contentType[] = "Content-Type: ";
 const char Globals::contentLength[] = "Content-Length: ";
 const char Globals::contentEncoding[] = "Content-Encoding: ";
+const std::vector<std::string> Globals::acceptedEncodings = {"gzip", "deflate", "br"};
 
 std::string Globals::BuildResponse(HttpPacket* packet,const char* headerResponse, const std::string &responseBody, const CONTENTTYPE responseType, const bool succes)
 {
@@ -20,12 +19,7 @@ std::string Globals::BuildResponse(HttpPacket* packet,const char* headerResponse
     if(succes)
     {
         buildResponse.append(headerResponse);
-        if(packet->GetContentEncoding() != nullptr)
-        {
-            buildResponse.append(Globals::contentEncoding);
-            buildResponse.append(packet->GetContentEncoding());
-            buildResponse.append("\r\n");
-        }
+
     }
     else
     {
@@ -33,6 +27,20 @@ std::string Globals::BuildResponse(HttpPacket* packet,const char* headerResponse
         buildResponse.append("\r\n");
 
         return buildResponse;
+    }
+
+    if(packet->GetContentEncoding() != nullptr)
+    {
+        std::string str(packet->GetContentEncoding());
+        auto it = std::find(acceptedEncodings.begin(), acceptedEncodings.end(), str);
+
+        if(it != acceptedEncodings.end())
+        {
+            buildResponse.append(Globals::contentEncoding);
+            buildResponse.append(packet->GetContentEncoding());
+            std::cout << "Building resp with content: " << packet->GetContentEncoding() <<std::endl;
+            buildResponse.append("\r\n");
+        }
     }
 
     buildResponse.append(contentType);

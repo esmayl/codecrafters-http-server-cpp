@@ -35,7 +35,8 @@ HttpPacket::HttpPacket(std::string rawString)
 
         if(line.find("Accept-Encoding") != std::string::npos)
         {
-            std::string encVal = line.substr(line.find(':')+1);
+            int semiIndex = line.find(':')+1;
+            std::string encVal = line.substr(semiIndex,line.find("\r\n",semiIndex)-semiIndex);
             contentEncoding = new char[encVal.length()];
 
             strcpy(contentEncoding,encVal.c_str());
