@@ -39,8 +39,6 @@ HttpPacket::HttpPacket(std::string rawString)
             contentEncoding = new char[encVal.length()];
 
             strcpy(contentEncoding,encVal.c_str());
-
-            delete encVal;
         }
 
         splitString.push_back(line);
