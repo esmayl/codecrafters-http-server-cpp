@@ -22,7 +22,7 @@
 class UserAgentController
 {
     public:
-        static void SendResponse(SocketWrapper* socketWrapper, HttpPacket& packet);
+        static void UserAgentController::SendResponse(SocketWrapper* socketWrapper, HttpPacket* packet);
 };
 
 

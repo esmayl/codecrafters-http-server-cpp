@@ -4,9 +4,9 @@
 
 #include "UserAgentController.h"
 
-void UserAgentController::SendResponse(SocketWrapper* socketWrapper, HttpPacket &packet)
+void UserAgentController::SendResponse(SocketWrapper* socketWrapper, HttpPacket* packet)
 {
-    std::string tempString = Globals::BuildResponse(Globals::getSuccessResponse, packet.GetUserAgent(), CONTENTTYPE::PLAIN, true);
+    std::string tempString = Globals::BuildResponse(packet,Globals::getSuccessResponse, packet->GetUserAgent(), CONTENTTYPE::PLAIN, true);
 
     std::cout << "Sending: " << tempString << std::endl;
 

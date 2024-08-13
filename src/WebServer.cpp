@@ -142,24 +142,24 @@ void WebServer::HandleRequest(SocketWrapper* connectedClient)
         {
             if(requestPacket.GetRequestType() == HTTPMETHOD::GET)
             {
-                this->fileControllerInstance->GetResponse(connectedClient,requestPacket.GetEndpoint().substr(5+1).c_str());
+                this->fileControllerInstance->GetResponse(&requestPacket,connectedClient,requestPacket.GetEndpoint().substr(5+1).c_str());
             }
             else if(requestPacket.GetRequestType() == HTTPMETHOD::POST)
             {
-                this->fileControllerInstance->PostResponse(connectedClient,requestPacket.GetEndpoint().substr(5+1).c_str(), requestPacket.GetBody(), requestPacket.GetBodyLength());
+                this->fileControllerInstance->PostResponse(&requestPacket,connectedClient,requestPacket.GetEndpoint().substr(5+1).c_str(), requestPacket.GetBody(), requestPacket.GetBodyLength());
             }
         }
         else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && requestPacket.GetEndpoint().compare(0,10,"user-agent") == 0)
         {
-            UserAgentController::SendResponse(connectedClient,requestPacket);
+            UserAgentController::SendResponse(connectedClient,&requestPacket);
         }
         else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && requestPacket.GetEndpoint().compare(0,4,"echo") == 0)
         {
-            EchoController::SendResponse(connectedClient,requestPacket);
+            EchoController::SendResponse(connectedClient,&requestPacket);
         }
         else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && requestPacket.GetEndpoint().empty())
         {
-            std::string emptyResponse = Globals::BuildResponse(Globals::getSuccessResponse,"", CONTENTTYPE::PLAIN, true);
+            std::string emptyResponse = Globals::BuildResponse(&requestPacket,Globals::getSuccessResponse,"", CONTENTTYPE::PLAIN, true);
 
             std::cout << "Custom Sending: " << emptyResponse.c_str() << std::endl;
 
@@ -167,7 +167,7 @@ void WebServer::HandleRequest(SocketWrapper* connectedClient)
         }
         else if(requestPacket.GetRequestType() == HTTPMETHOD::GET)
         {
-            std::string errorResponse = Globals::BuildResponse(Globals::errorResponse,"", CONTENTTYPE::PLAIN, false);
+            std::string errorResponse = Globals::BuildResponse(&requestPacket,Globals::errorResponse,"", CONTENTTYPE::PLAIN, false);
 
             std::cout << "Custom Error Sending: " << errorResponse.c_str() << std::endl;
 

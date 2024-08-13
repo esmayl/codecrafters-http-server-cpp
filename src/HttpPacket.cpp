@@ -33,6 +33,16 @@ HttpPacket::HttpPacket(std::string rawString)
             contentLength = std::stoll(line.substr(line.find(':')+1));
         }
 
+        if(line.find("Accept-Encoding") != std::string::npos)
+        {
+            std::string encVal = line.substr(line.find(':')+1);
+            contentEncoding = new char[encVal.length()];
+
+            strcpy(contentEncoding,encVal.c_str());
+
+            delete encVal;
+        }
+
         splitString.push_back(line);
 
         startIndex = foundIndex;
@@ -113,5 +123,10 @@ char* HttpPacket::GetBody()
 std::streamsize* HttpPacket::GetBodyLength()
 {
     return &contentLength;
+}
+
+char* HttpPacket::GetContentEncoding()
+{
+    return contentEncoding;
 }
 

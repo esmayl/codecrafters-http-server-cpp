@@ -20,7 +20,8 @@ class Globals
         static const char contentType[];
         static const char contentLength[];
         static const char connectionClose[];
+        static const char contentEncoding[];
 
-        static std::string BuildResponse(const char* headerResponse, const std::string& responseBody, const CONTENTTYPE responseType, const bool succes);
+        static std::string Globals::BuildResponse(HttpPacket* packet,const char* headerResponse, const std::string &responseBody, const CONTENTTYPE responseType, const bool succes);
 };
 #endif //GLOBALS_H

@@ -4,13 +4,13 @@
 
 #include "EchoController.h"
 
-void EchoController::SendResponse(SocketWrapper* socketWrapper, HttpPacket& packet)
+void EchoController::SendResponse(SocketWrapper* socketWrapper, HttpPacket* packet)
 {
-    std::string endpoint = packet.GetEndpoint();
+    std::string endpoint = packet->GetEndpoint();
     size_t lastSlashIndex = endpoint.find_last_of('/');;
     lastSlashIndex++; // ++ to move past the /
 
-    endpoint = Globals::BuildResponse(Globals::getSuccessResponse, endpoint.substr(lastSlashIndex), CONTENTTYPE::PLAIN, true);
+    endpoint = Globals::BuildResponse(packet,Globals::getSuccessResponse, endpoint.substr(lastSlashIndex), CONTENTTYPE::PLAIN, true);
 
     std::cout << "Sending: " <<endpoint<< std::endl;
 

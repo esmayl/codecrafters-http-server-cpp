@@ -20,6 +20,7 @@ class HttpPacket
         std::string& GetEndpoint();
         std::string& GetUserAgent();
         std::streamsize* GetBodyLength();
+        char* GetContentEncoding();
         char* GetBody();
 
     private:
@@ -30,6 +31,7 @@ class HttpPacket
         const char* httpVersion;
         const char* host;
         char* body;
+        char* contentEncoding;
 };
 
 

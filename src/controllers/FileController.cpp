@@ -11,7 +11,7 @@ FileController::FileController(std::string fileFolder)
     this->fileFolder = std::move(fileFolder);
 }
 
-void FileController::GetResponse(SocketWrapper* socketWrapper, const char* fileLocation)
+void FileController::GetResponse(HttpPacket* packet,SocketWrapper* socketWrapper, const char* fileLocation)
 {
     std::string fileContent;
     std::string tempString;
@@ -27,7 +27,7 @@ void FileController::GetResponse(SocketWrapper* socketWrapper, const char* fileL
 
     if(!inputFile.is_open())
     {
-        tempString = Globals::BuildResponse(Globals::errorResponse, filePath+" file not found", CONTENTTYPE::PLAIN, false);
+        tempString = Globals::BuildResponse(packet,Globals::errorResponse, filePath+" file not found", CONTENTTYPE::PLAIN, false);
     }
     else
     {
@@ -35,7 +35,7 @@ void FileController::GetResponse(SocketWrapper* socketWrapper, const char* fileL
 
         inputFile.close();
 
-        tempString = Globals::BuildResponse(Globals::getSuccessResponse, fileContent, CONTENTTYPE::OCTET, true);
+        tempString = Globals::BuildResponse(packet,Globals::getSuccessResponse, fileContent, CONTENTTYPE::OCTET, true);
     }
 
     std::cout << "Sending: " << tempString << std::endl;
@@ -43,7 +43,7 @@ void FileController::GetResponse(SocketWrapper* socketWrapper, const char* fileL
     send(socketWrapper->socket,tempString.c_str(),static_cast<int>(tempString.length()),0);
 }
 
-void FileController::PostResponse(SocketWrapper* socketWrapper, const char* fileLocation, char* dataToWrite, std::streamsize* dataLength)
+void FileController::PostResponse(HttpPacket* packet,SocketWrapper* socketWrapper, const char* fileLocation, char* dataToWrite, std::streamsize* dataLength)
 {
     std::string filePath;
 
@@ -59,7 +59,7 @@ void FileController::PostResponse(SocketWrapper* socketWrapper, const char* file
 
     outputFile.close();
 
-    std::string response = Globals::BuildResponse(Globals::postSuccessResponse,"",CONTENTTYPE::OCTET,true);
+    std::string response = Globals::BuildResponse(packet,Globals::postSuccessResponse,"",CONTENTTYPE::OCTET,true);
 
     send(socketWrapper->socket,response.c_str(),static_cast<int>(response.length()),0);
 }

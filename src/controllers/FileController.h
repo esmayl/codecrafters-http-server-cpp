@@ -23,8 +23,8 @@ class FileController
 
 public:
     FileController(std::string fileFolder);
-    void GetResponse(SocketWrapper* socketWrapper, const char* fileLocation);
-    void PostResponse(SocketWrapper* socketWrapper, const char* fileLocation, char* dataToWrite, std::streamsize* dataLength);
+    void GetResponse(HttpPacket* packet, SocketWrapper* socketWrapper, const char* fileLocation);
+    void PostResponse(HttpPacket* packet, SocketWrapper* socketWrapper, const char* fileLocation, char* dataToWrite, std::streamsize* dataLength);
 private:
     std::string fileFolder;
 };
