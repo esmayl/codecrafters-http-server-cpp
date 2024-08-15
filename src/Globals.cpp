@@ -4,6 +4,8 @@
 
 #include "Globals.h"
 
+#include <zlib.h>
+
 const char Globals::getSuccessResponse[] = "HTTP/1.1 200 OK\r\n";
 const char Globals::postSuccessResponse[] = "HTTP/1.1 201 Created\r\n";
 const char Globals::errorResponse[] = "HTTP/1.1 404 Not Found\r\n";
@@ -12,9 +14,11 @@ const char Globals::contentLength[] = "Content-Length: ";
 const char Globals::contentEncoding[] = "Content-Encoding: ";
 const std::vector<std::string> Globals::acceptedEncodings = {"gzip", "deflate", "br"};
 
-std::string Globals::BuildResponse(HttpPacket* packet,const char* headerResponse, const std::string &responseBody, const CONTENTTYPE responseType, const bool succes)
+std::string Globals::BuildResponse(HttpPacket* packet,const char* headerResponse, std::string responseBody, const CONTENTTYPE responseType, const bool succes)
 {
     std::string buildResponse;
+    bool isAccepted = false;
+    int acceptedIndex = -1;
 
     if(succes)
     {
@@ -31,8 +35,7 @@ std::string Globals::BuildResponse(HttpPacket* packet,const char* headerResponse
 
     if(!packet->GetContentEncoding()->empty())
     {
-        bool isAccepted = false;
-        int acceptedIndex = -1;
+
         std::vector<std::string>* requestEncoding = packet->GetContentEncoding();
 
         for(const auto& str: acceptedEncodings)
@@ -59,6 +62,11 @@ std::string Globals::BuildResponse(HttpPacket* packet,const char* headerResponse
             buildResponse.append(acceptedEncodings[acceptedIndex]);
             std::cout << "Building resp with content: " << acceptedEncodings[acceptedIndex] <<std::endl;
             buildResponse.append("\r\n");
+
+            if(acceptedEncodings[acceptedIndex] == "gzip")
+            {
+                responseBody = GzipCompress(responseBody);
+            }
         }
     }
 
@@ -91,3 +99,49 @@ std::string Globals::BuildResponse(HttpPacket* packet,const char* headerResponse
     return buildResponse;
 }
 
+
+std::string Globals::GzipCompress(std::string inputString)
+{
+    z_stream deflateStream;
+    deflateStream.zalloc = Z_NULL;
+    deflateStream.zfree = Z_NULL;
+    deflateStream.opaque = Z_NULL;
+
+    deflateStream.avail_in = inputString.size();
+    deflateStream.next_in = reinterpret_cast<Bytef*>(const_cast<char*>(inputString.data()));
+
+    // 15 == window bits for sliding window (max for the deflate algorithm)
+    // 16 == gzip header
+    // 8 == memory level, 1 - 9 , 1 using least amount of memory , 9 using most amount. 9 should be the best compression and most memory and vice versa for 1
+    int returnVal = deflateInit2(&deflateStream,Z_BEST_COMPRESSION,Z_DEFLATED,15 | 16,8,Z_DEFAULT_STRATEGY);
+
+    if (returnVal != Z_OK) {
+        std::cout << "deflateInit2 failed" << std::endl;
+        return inputString;
+    }
+
+    char outBuffer[32768];
+    std::string compressed;
+
+    do
+    {
+        deflateStream.avail_out = sizeof(outBuffer);
+        deflateStream.next_out = reinterpret_cast<Bytef*>(outBuffer);
+        returnVal = deflate(&deflateStream,Z_FINISH);
+
+        if(compressed.size() < deflateStream.total_out)
+        {
+            compressed.append(outBuffer,deflateStream.total_out - compressed.size());
+        }
+    } while (returnVal == Z_OK);
+
+    deflateEnd(&deflateStream);
+
+    if(returnVal != Z_STREAM_END)
+    {
+        std::cout << "deflate failed" << std::endl;
+        return inputString;
+    }
+
+    return compressed;
+}

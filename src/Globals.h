@@ -29,6 +29,8 @@ class Globals
         static const char contentEncoding[];
         static const std::vector<std::string> acceptedEncodings;
 
-        static std::string BuildResponse(HttpPacket* packet,const char* headerResponse, const std::string &responseBody, const CONTENTTYPE responseType, const bool succes);
+        static std::string GzipCompress(std::string inputString);
+
+        static std::string BuildResponse(HttpPacket* packet,const char* headerResponse, std::string responseBody, const CONTENTTYPE responseType, const bool succes);
 };
 #endif //GLOBALS_H

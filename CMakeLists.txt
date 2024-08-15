@@ -7,6 +7,13 @@ endif()
 
 set(CMAKE_CXX_STANDARD 20) # Enable the C++20 standard
 
+include(FetchContent)
+FetchContent_Declare(
+        zlib
+        URL https://zlib.net/current/zlib.tar.gz
+)
+FetchContent_MakeAvailable(zlib)
+
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 
 add_executable(server ${SOURCE_FILES}
@@ -32,4 +39,4 @@ add_executable(server ${SOURCE_FILES}
         src/utilities/StringUtils.cpp
         src/utilities/StringUtils.h
 )
-target_link_libraries(server pthread)
+target_link_libraries(server pthread zlibstatic)
