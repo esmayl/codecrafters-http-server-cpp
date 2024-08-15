@@ -29,5 +29,7 @@ add_executable(server ${SOURCE_FILES}
         src/WebServer.h
         src/utilities/ThreadPool.cpp
         src/utilities/ThreadPool.h
+        src/utilities/StringUtils.cpp
+        src/utilities/StringUtils.h
 )
 target_link_libraries(server pthread)

@@ -8,8 +8,12 @@
 #pragma once
 #include <string>
 #include <cstring>  // For std::strcpy
+#include <vector>
+#include <iostream>
+#include <vector>
 
 #include "enums/HTTPMETHOD.h"
+#include "utilities/StringUtils.h"
 
 class HttpPacket
 {
@@ -20,7 +24,7 @@ class HttpPacket
         std::string& GetEndpoint();
         std::string& GetUserAgent();
         std::streamsize* GetBodyLength();
-        char* GetContentEncoding();
+        std::vector<std::string>* GetContentEncoding();
         char* GetBody();
 
     private:
@@ -31,7 +35,7 @@ class HttpPacket
         const char* httpVersion;
         const char* host;
         char* body;
-        char* contentEncoding;
+        std::vector<std::string> contentEncoding;
 };
 
 

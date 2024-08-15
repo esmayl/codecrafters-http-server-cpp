@@ -4,9 +4,6 @@
 
 #include "HttpPacket.h"
 
-#include <iostream>
-#include <vector>
-
 HttpPacket::HttpPacket(std::string rawString)
 {
     contentLength = 0;
@@ -36,10 +33,9 @@ HttpPacket::HttpPacket(std::string rawString)
         if(line.find("Accept-Encoding") != std::string::npos)
         {
             int semiIndex = line.find(':')+1;
-            std::string encVal = line.substr(semiIndex,line.find("\r\n",semiIndex)-semiIndex);
-            contentEncoding = new char[encVal.length()];
+            std::string encVal(line.substr(semiIndex,line.find("\r\n",semiIndex)-semiIndex));
 
-            strcpy(contentEncoding,encVal.c_str());
+            contentEncoding = StringUtils::SplitString(encVal,',');
         }
 
         splitString.push_back(line);
@@ -124,8 +120,7 @@ std::streamsize* HttpPacket::GetBodyLength()
     return &contentLength;
 }
 
-char* HttpPacket::GetContentEncoding()
+std::vector<std::string>* HttpPacket::GetContentEncoding()
 {
-    return contentEncoding;
+    return &contentEncoding;
 }
-

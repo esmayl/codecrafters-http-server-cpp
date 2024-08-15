@@ -29,16 +29,35 @@ std::string Globals::BuildResponse(HttpPacket* packet,const char* headerResponse
         return buildResponse;
     }
 
-    if(packet->GetContentEncoding() != nullptr)
+    if(!packet->GetContentEncoding()->empty())
     {
-        std::string str(packet->GetContentEncoding());
-        auto it = std::find(acceptedEncodings.begin(), acceptedEncodings.end(), str);
+        bool isAccepted = false;
+        int acceptedIndex = -1;
+        std::vector<std::string>* requestEncoding = packet->GetContentEncoding();
 
-        if(it != acceptedEncodings.end())
+        for(const auto& str: acceptedEncodings)
+        {
+            acceptedIndex++;
+            for(int i=0;i<requestEncoding->size();i++)
+            {
+                if(str == requestEncoding->at(i))
+                {
+                    isAccepted = true;
+                    break;
+                }
+            }
+
+            if(isAccepted)
+            {
+                break;
+            }
+        }
+
+        if(isAccepted)
         {
             buildResponse.append(Globals::contentEncoding);
-            buildResponse.append(packet->GetContentEncoding());
-            std::cout << "Building resp with content: " << packet->GetContentEncoding() <<std::endl;
+            buildResponse.append(acceptedEncodings[acceptedIndex]);
+            std::cout << "Building resp with content: " << acceptedEncodings[acceptedIndex] <<std::endl;
             buildResponse.append("\r\n");
         }
     }
