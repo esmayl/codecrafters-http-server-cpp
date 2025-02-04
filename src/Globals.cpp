@@ -41,7 +41,9 @@ std::string Globals::BuildResponse(HttpPacket* packet,const char* headerResponse
         for(const auto& str: acceptedEncodings)
         {
             acceptedIndex++;
-            for(int i=0;i<requestEncoding->size();i++)
+            size_t requestSize = requestEncoding->size();
+
+            for(int i=0;i<requestSize;i++)
             {
                 if(str == requestEncoding->at(i))
                 {
@@ -56,11 +58,12 @@ std::string Globals::BuildResponse(HttpPacket* packet,const char* headerResponse
             }
         }
 
+
         if(isAccepted)
         {
             buildResponse.append(Globals::contentEncoding);
             buildResponse.append(acceptedEncodings[acceptedIndex]);
-            std::cout << "Building resp with content: " << acceptedEncodings[acceptedIndex] <<std::endl;
+            std::cout << "Building response with content encoding: " << acceptedEncodings[acceptedIndex] << std::endl;
             buildResponse.append("\r\n");
 
             if(acceptedEncodings[acceptedIndex] == "gzip")
@@ -87,13 +90,17 @@ std::string Globals::BuildResponse(HttpPacket* packet,const char* headerResponse
     buildResponse.append(std::to_string(responseBody.length()));
     buildResponse.append("\r\n\r\n");
 
+    std::cout << "Build response:\n\n" << buildResponse;
+
     if(!responseBody.empty())
     {
         buildResponse.append(responseBody);
+        std::cout << "[Gzip compressed body, content length: " << std::to_string(responseBody.length()) << "]" << "\n\n" << std::endl;
     }
     else
     {
         buildResponse.append("\r\n");
+        std::cout << "\n\n" << std::endl;
     }
 
     return buildResponse;

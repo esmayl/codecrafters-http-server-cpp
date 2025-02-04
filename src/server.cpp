@@ -15,8 +15,7 @@ int main(int argc, char **argv)
 {
     WebServer webServer(4221);
 
-    int i;
-    for (i = 0; i < argc; i++)
+    for (size_t i = 0; i < argc; i++)
     {
         // printf("%s\n",argv[i]);
 
@@ -32,7 +31,7 @@ int main(int argc, char **argv)
             else
             {
                 printf("Directory '%s\n' does not exist", argv[i+1]);
-                // return 1;
+                return 1;
             }
             break;
         }
@@ -47,7 +46,7 @@ int main(int argc, char **argv)
 
     if(webServer.Start() == 1)
     {
-        return 0;
+        return 1;
     }
 
     return 0;

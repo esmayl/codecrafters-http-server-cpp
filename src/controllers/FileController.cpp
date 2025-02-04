@@ -11,7 +11,7 @@ FileController::FileController(std::string fileFolder)
     this->fileFolder = std::move(fileFolder);
 }
 
-void FileController::GetResponse(HttpPacket* packet,SocketWrapper* socketWrapper, const char* fileLocation)
+void FileController::GetResponse(HttpPacket* packet, const SocketWrapper* socketWrapper, const char* fileLocation) const
 {
     std::string fileContent;
     std::string tempString;
@@ -38,12 +38,10 @@ void FileController::GetResponse(HttpPacket* packet,SocketWrapper* socketWrapper
         tempString = Globals::BuildResponse(packet,Globals::getSuccessResponse, fileContent, CONTENTTYPE::OCTET, true);
     }
 
-    std::cout << "Sending: " << tempString << std::endl;
-
     send(socketWrapper->socket,tempString.c_str(),static_cast<int>(tempString.length()),0);
 }
 
-void FileController::PostResponse(HttpPacket* packet,SocketWrapper* socketWrapper, const char* fileLocation, char* dataToWrite, std::streamsize* dataLength)
+void FileController::PostResponse(HttpPacket* packet, const SocketWrapper* socketWrapper, const char* fileLocation, const char* dataToWrite, const std::streamsize* dataLength) const
 {
     std::string filePath;
 

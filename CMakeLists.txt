@@ -17,8 +17,8 @@ FetchContent_MakeAvailable(zlib)
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 
 add_executable(server ${SOURCE_FILES}
-        src/HttpPacket.cpp
-        src/HttpPacket.h
+        src/objects/HttpPacket.cpp
+        src/objects/HttpPacket.h
         src/enums/HTTPMETHOD.h
         src/controllers/EchoController.cpp
         src/controllers/EchoController.h
@@ -30,8 +30,8 @@ add_executable(server ${SOURCE_FILES}
         src/controllers/FileController.h
         src/enums/CONTENTTYPE.cpp
         src/enums/CONTENTTYPE.h
-        src/SocketWrapper.cpp
-        src/SocketWrapper.h
+        src/objects/SocketWrapper.cpp
+        src/objects/SocketWrapper.h
         src/WebServer.cpp
         src/WebServer.h
         src/utilities/ThreadPool.cpp

@@ -11,7 +11,7 @@
 #include <iostream>
 #include <ostream>
 
-#include "HttpPacket.h"
+#include "objects/HttpPacket.h"
 #include "enums/CONTENTTYPE.h"
 
 class HttpPacket;

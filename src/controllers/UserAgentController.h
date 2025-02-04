@@ -14,15 +14,15 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-#include "../HttpPacket.h"
+#include "../objects/HttpPacket.h"
 #include "../Globals.h"
-#include "../SocketWrapper.h"
+#include "../objects/SocketWrapper.h"
 
 
 class UserAgentController
 {
     public:
-        static void SendResponse(SocketWrapper* socketWrapper, HttpPacket* packet);
+        static void SendResponse(const SocketWrapper* socketWrapper, HttpPacket* packet);
 };
 
 

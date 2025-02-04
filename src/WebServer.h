@@ -13,8 +13,8 @@
 #include <memory>
 #include <thread>
 
-#include "HttpPacket.h"
-#include "SocketWrapper.h"
+#include "objects/HttpPacket.h"
+#include "objects/SocketWrapper.h"
 #include "controllers/FileController.h"
 #include "controllers/EchoController.h"
 #include "controllers/UserAgentController.h"

@@ -7,6 +7,7 @@
 
 
 
+// ReSharper disable once CppPossiblyUninitializedMember
 WebServer::WebServer(int port): threadPool(5)
 {
     this->port = port;
@@ -32,11 +33,13 @@ void WebServer::AcceptConnection()
 #endif
 
     SocketWrapper returnSocket;
+
+    // Using a single thread for accepting, probably not possible to make this multithreaded
     returnSocket.socket = accept(serverSocketWrapper.socket, reinterpret_cast<sockaddr*>(&client_addr), &casted_client_addr_len);
     returnSocket.reuse = 1;
-    if (returnSocket.socket >= 0)
+    if (returnSocket.socket != INVALID_SOCKET)
     {
-
+        // Create a new thread for every request
         threadPool.Enqueue([this,returnSocket]() mutable
         {
             HandleRequest(&returnSocket);
@@ -102,8 +105,9 @@ int WebServer::Start()
     // u_long mode =1;
     // ioctlsocket(ListenSocket,FIONBIO,&mode); // non - blocking
 
-    std::cout << "Waiting for a client to connect...\n";
+    std::cout << "Waiting for a client to connect on port: " << this->port << "\n";
 
+    // ReSharper disable once CppDFAEndlessLoop
     while(true)
     {
         AcceptConnection();
@@ -136,40 +140,39 @@ void WebServer::HandleRequest(SocketWrapper* connectedClient)
 
         HttpPacket requestPacket = ParseRequestHeader(s);
 
-        std::cout << "Custom Received: " << requestPacket.GetEndpoint() << std::endl;
+        std::cout << "Endpoint hit: " << requestPacket.GetEndpoint() << std::endl;
+        std::string endpoint = requestPacket.GetEndpoint();
 
-        if(canUseFiles && requestPacket.GetEndpoint().compare(0,5,"files") == 0)
+        //TODO: Create controller that communicated with sql server
+        //TODO: Add performance metric in all responses, amount of seconds past since receiving request until sending response
+        if(canUseFiles && endpoint.compare(0,7,"/files/") == 0)
         {
             if(requestPacket.GetRequestType() == HTTPMETHOD::GET)
             {
-                this->fileControllerInstance->GetResponse(&requestPacket,connectedClient,requestPacket.GetEndpoint().substr(5+1).c_str());
+                this->fileControllerInstance->GetResponse(&requestPacket,connectedClient,endpoint.substr(7).c_str());
             }
             else if(requestPacket.GetRequestType() == HTTPMETHOD::POST)
             {
-                this->fileControllerInstance->PostResponse(&requestPacket,connectedClient,requestPacket.GetEndpoint().substr(5+1).c_str(), requestPacket.GetBody(), requestPacket.GetBodyLength());
+                this->fileControllerInstance->PostResponse(&requestPacket,connectedClient,endpoint.substr(7).c_str(), requestPacket.GetBody(), requestPacket.GetBodyLength());
             }
         }
-        else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && requestPacket.GetEndpoint().compare(0,10,"user-agent") == 0)
+        else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && endpoint.compare(1,11,"user-agent") == 0)
         {
             UserAgentController::SendResponse(connectedClient,&requestPacket);
         }
-        else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && requestPacket.GetEndpoint().compare(0,4,"echo") == 0)
+        else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && endpoint.compare(1,5,"echo") == 0)
         {
             EchoController::SendResponse(connectedClient,&requestPacket);
         }
-        else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && requestPacket.GetEndpoint().empty())
+        else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && endpoint.empty())
         {
             std::string emptyResponse = Globals::BuildResponse(&requestPacket,Globals::getSuccessResponse,"", CONTENTTYPE::PLAIN, true);
-
-            std::cout << "Custom Sending: " << emptyResponse.c_str() << std::endl;
 
             send(connectedClient->socket,emptyResponse.c_str(),static_cast<int>(emptyResponse.length()),0);
         }
         else if(requestPacket.GetRequestType() == HTTPMETHOD::GET)
         {
             std::string errorResponse = Globals::BuildResponse(&requestPacket,Globals::errorResponse,"", CONTENTTYPE::PLAIN, false);
-
-            std::cout << "Custom Error Sending: " << errorResponse.c_str() << std::endl;
 
             send(connectedClient->socket,errorResponse.c_str(),static_cast<int>(errorResponse.length()),0);
         }
