@@ -79,6 +79,12 @@ HttpPacket::HttpPacket(const std::string& rawString)
     startEndpointChar+=1; // +1 to skip the /
     endpoint = splitString[0].substr(startEndpointChar,endEndPointChar-startEndpointChar);
 
+    // Sanitizing the endpoint to prevent path traversal
+    size_t pos;
+    while ((pos = endpoint.find("../")) != std::string::npos) {
+        endpoint.erase(pos, 3); // Remove the two dots
+    }
+
 
     for (size_t j=1;j < splitString.size();j++)
     {

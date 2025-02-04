@@ -131,12 +131,11 @@ void WebServer::HandleRequest(SocketWrapper* connectedClient)
     char receiveBuffer[1024];
 
     ssize_t readBytes = 0;
-    std::string s;
 
     if((readBytes = recv(connectedClient->socket,receiveBuffer,sizeof(receiveBuffer) - 1,0)) > 0)
     {
         receiveBuffer[readBytes] = '\0';
-        s.append(receiveBuffer,readBytes);
+        std::string s(receiveBuffer, readBytes);;
 
         HttpPacket requestPacket = ParseRequestHeader(s);
 
@@ -156,11 +155,11 @@ void WebServer::HandleRequest(SocketWrapper* connectedClient)
                 this->fileControllerInstance->PostResponse(&requestPacket,connectedClient,endpoint.substr(7).c_str(), requestPacket.GetBody(), requestPacket.GetBodyLength());
             }
         }
-        else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && endpoint.compare(1,11,"user-agent") == 0)
+        else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && endpoint.compare(0,11,"/user-agent") == 0)
         {
             UserAgentController::SendResponse(connectedClient,&requestPacket);
         }
-        else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && endpoint.compare(1,5,"echo") == 0)
+        else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && endpoint.compare(0,5,"/echo") == 0)
         {
             EchoController::SendResponse(connectedClient,&requestPacket);
         }

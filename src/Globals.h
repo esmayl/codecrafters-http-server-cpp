@@ -10,6 +10,7 @@
 #include <vector>
 #include <iostream>
 #include <ostream>
+#include <zlib.h>
 
 #include "objects/HttpPacket.h"
 #include "enums/CONTENTTYPE.h"
