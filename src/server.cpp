@@ -3,7 +3,6 @@
 #include <cstring>
 #include <filesystem>
 #include <thread>
-#include <unistd.h>
 #include <vector>
 #include <sys/types.h>
 
@@ -27,6 +26,7 @@ int main(int argc, char **argv)
             {
                 printf("Setup directory: %s\n", argv[i+1]);
                 webServer.SetupDirectory(argv[i+1]);
+                break;
             }
             else
             {
@@ -38,11 +38,11 @@ int main(int argc, char **argv)
     }
 
     // Flush after every std::cout / std::cerr
-    std::cout << std::unitbuf;
-    std::cerr << std::unitbuf;
+    // std::cout << std::unitbuf;
+    // std::cerr << std::unitbuf;
 
     // You can use print statements as follows for debugging, they'll be visible when running tests.
-    std::cout << "Logs from your program will appear here!\n";
+    printf("Logs from your program will appear here!\n");
 
     if(webServer.Start() == 1)
     {

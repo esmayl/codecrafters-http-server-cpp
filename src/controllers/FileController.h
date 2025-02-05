@@ -11,7 +11,6 @@
 #include <cstdlib>
 #include <string>
 #include <cstring>
-#include <unistd.h>
 #include <sys/types.h>
 #include <utility>
 #include "../objects/HttpPacket.h"
@@ -22,7 +21,7 @@ class FileController
 {
 
 public:
-    FileController(std::string fileFolder);
+    explicit FileController(std::string fileFolder);
     void GetResponse(HttpPacket* packet, const SocketWrapper* socketWrapper, const char* fileLocation) const;
     void PostResponse(HttpPacket* packet, const SocketWrapper* socketWrapper, const char* fileLocation, const char* dataToWrite, const std::streamsize* dataLength) const;
 private:

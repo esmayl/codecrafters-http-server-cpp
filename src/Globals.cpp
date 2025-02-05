@@ -61,7 +61,8 @@ std::string Globals::BuildResponse(HttpPacket* packet,const char* headerResponse
         {
             buildResponse.append(Globals::contentEncoding);
             buildResponse.append(acceptedEncodings[acceptedIndex]);
-            std::cout << "Building response with content encoding: " << acceptedEncodings[acceptedIndex] << std::endl;
+            printf("Building response with content encoding: ");
+            printf(acceptedEncodings[acceptedIndex].c_str());
             buildResponse.append("\r\n");
 
             if(acceptedEncodings[acceptedIndex] == "gzip")
@@ -88,17 +89,20 @@ std::string Globals::BuildResponse(HttpPacket* packet,const char* headerResponse
     buildResponse.append(std::to_string(responseBody.length()));
     buildResponse.append("\r\n\r\n");
 
-    std::cout << "Build response:\n\n" << buildResponse;
+    printf("Build response:\n\n");
+    printf(buildResponse.c_str());
 
     if(!responseBody.empty())
     {
         buildResponse.append(responseBody);
-        std::cout << "[Gzip compressed body, content length: " << std::to_string(responseBody.length()) << "]" << "\n\n" << std::endl;
+        printf("[Gzip compressed body, content length: ");
+        printf(std::to_string(responseBody.length()).c_str());
+        printf("]\n\n");
     }
     else
     {
         buildResponse.append("\r\n");
-        std::cout << "\n\n" << std::endl;
+         printf("\n\n");
     }
 
     return buildResponse;
@@ -121,7 +125,7 @@ std::string Globals::GzipCompress(std::string inputString)
     int returnVal = deflateInit2(&deflateStream,Z_BEST_COMPRESSION,Z_DEFLATED,15 | 16,8,Z_DEFAULT_STRATEGY);
 
     if (returnVal != Z_OK) {
-        std::cout << "deflateInit2 failed" << std::endl;
+        printf("deflateInit2 failed");
         return inputString;
     }
 
@@ -144,7 +148,7 @@ std::string Globals::GzipCompress(std::string inputString)
 
     if(returnVal != Z_STREAM_END)
     {
-        std::cout << "deflate failed" << std::endl;
+        printf("deflate failed");
         return inputString;
     }
 

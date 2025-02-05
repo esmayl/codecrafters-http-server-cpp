@@ -15,7 +15,7 @@ WebServer::WebServer(int port): threadPool(5)
 
 HttpPacket WebServer::ParseRequestHeader(const std::string &rawString)
 {
-    std::cout << "Parsing request" << std::endl;
+    printf("Parsing request\n\n");
 
     return HttpPacket(rawString);
 }
@@ -59,7 +59,7 @@ int WebServer::Start()
     int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (iResult != NO_ERROR)
     {
-        wprintf(L"Error at WSAStartup()\n");
+        printf("Error at WSAStartup()\n");
         return 1;
     }
 #endif
@@ -69,7 +69,7 @@ int WebServer::Start()
     serverSocketWrapper.socket = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocketWrapper.socket == 0)
     {
-        std::cerr << "Failed to create server socket\n";
+        printf("Failed to create server socket\n");
         return 1;
     }
 
@@ -80,7 +80,7 @@ int WebServer::Start()
 
     if (setsockopt(serverSocketWrapper.socket, SOL_SOCKET, SO_REUSEADDR,&serverSocketWrapper.reuse , sizeof(serverSocketWrapper.reuse)) < 0)
     {
-        std::cerr << "setsockopt failed\n";
+        printf("setsockopt failed\n");
         return 1;
     }
 
@@ -91,21 +91,25 @@ int WebServer::Start()
 
     if (bind(serverSocketWrapper.socket, (struct sockaddr*)&server_addr, sizeof(server_addr)) != 0)
     {
-        std::cerr << "Failed to bind to port " << port << "\n" << std::endl;
+        printf("Failed to bind to port ");
+        printf(std::to_string(port).c_str());
+        printf("\n");
         return 1;
     }
 
     int max_connection_backlog = 5;
     if (listen(serverSocketWrapper.socket, max_connection_backlog) != 0)
     {
-        std::cerr << "listen failed\n";
+        printf("listen failed\n");
         return 1;
     }
 
     // u_long mode =1;
     // ioctlsocket(ListenSocket,FIONBIO,&mode); // non - blocking
 
-    std::cout << "Waiting for a client to connect on port: " << this->port << "\n";
+    printf("Waiting for a client to connect on port: ");
+    printf(std::to_string(this->port).c_str());
+    printf("\n");
 
     // ReSharper disable once CppDFAEndlessLoop
     while(true)
@@ -126,11 +130,11 @@ int WebServer::Start()
 
 void WebServer::HandleRequest(SocketWrapper* connectedClient)
 {
-    std::cout << "Handling request\n";
+    printf("Handling request\n");
 
     char receiveBuffer[1024];
 
-    ssize_t readBytes = 0;
+    size_t readBytes = 0;
 
     if((readBytes = recv(connectedClient->socket,receiveBuffer,sizeof(receiveBuffer) - 1,0)) > 0)
     {
@@ -139,20 +143,23 @@ void WebServer::HandleRequest(SocketWrapper* connectedClient)
 
         HttpPacket requestPacket = ParseRequestHeader(s);
 
-        std::cout << "Endpoint hit: " << requestPacket.GetEndpoint() << std::endl;
+        printf("Endpoint hit: ");
+        printf(requestPacket.GetEndpoint().c_str());
+        printf("\n");
         std::string endpoint = requestPacket.GetEndpoint();
 
         //TODO: Create controller that communicated with sql server
         //TODO: Add performance metric in all responses, amount of seconds past since receiving request until sending response
+        //TODO: Make video stream endpoint, mount folder from router and stream out maybe hls? multicast?
         if(canUseFiles && endpoint.compare(0,7,"/files/") == 0)
         {
             if(requestPacket.GetRequestType() == HTTPMETHOD::GET)
             {
-                this->fileControllerInstance->GetResponse(&requestPacket,connectedClient,endpoint.substr(7).c_str());
+                this->fileControllerInstance->GetResponse(&requestPacket,connectedClient,endpoint.substr(6).c_str());
             }
             else if(requestPacket.GetRequestType() == HTTPMETHOD::POST)
             {
-                this->fileControllerInstance->PostResponse(&requestPacket,connectedClient,endpoint.substr(7).c_str(), requestPacket.GetBody(), requestPacket.GetBodyLength());
+                this->fileControllerInstance->PostResponse(&requestPacket,connectedClient,endpoint.substr(6).c_str(), requestPacket.GetBody(), requestPacket.GetBodyLength());
             }
         }
         else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && endpoint.compare(0,11,"/user-agent") == 0)

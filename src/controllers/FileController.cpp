@@ -23,7 +23,9 @@ void FileController::GetResponse(HttpPacket* packet, const SocketWrapper* socket
 
     std::ifstream inputFile(filePath);
 
-    std::cout << "Opening file:" << filePath << std::endl;
+    printf("Opening file: ");
+    printf(filePath.c_str());
+    printf("\n");
 
     if(!inputFile.is_open())
     {
@@ -50,8 +52,12 @@ void FileController::PostResponse(HttpPacket* packet, const SocketWrapper* socke
 
     std::ofstream outputFile(filePath);
 
-    std::cout << "Opening file:" << filePath << std::endl;
-    std::cout << "Writing: " << dataToWrite << std::endl;
+    printf("Opening file: ");
+    printf(filePath.c_str());
+    printf("\n");
+    printf("Writing: ");
+    printf(dataToWrite);
+    printf("\n");
 
     outputFile.write(dataToWrite,*dataLength);
 
