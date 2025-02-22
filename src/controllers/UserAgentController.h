@@ -13,15 +13,15 @@
 #include <cstring>
 #include <sys/types.h>
 
-#include "../objects/HttpPacket.h"
 #include "../Globals.h"
+#include "../objects/HttpPacket.h"
 #include "../objects/SocketWrapper.h"
 
 
 class UserAgentController
 {
     public:
-        static void SendResponse(const SocketWrapper* socketWrapper, HttpPacket* packet);
+        static void GetResponse(HttpPacket* packet, SocketWrapper* connectedClient);
 };
 
 

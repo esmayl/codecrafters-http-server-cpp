@@ -12,26 +12,26 @@
 #include <ostream>
 #include <zlib.h>
 
-#include "objects/HttpPacket.h"
 #include "enums/CONTENTTYPE.h"
-
-class HttpPacket;
+#include "objects/HttpPacket.h"
+#include "objects/HttpHeader.h"
 
 class Globals
 {
 
     public:
         static const char getSuccessResponse[];
-        static const char postSuccessResponse[];
+        static const char postCreatedResponse[];
         static const char errorResponse[];
-        static const char contentType[];
-        static const char contentLength[];
         static const char connectionClose[];
-        static const char contentEncoding[];
+        static const char plainContentType[];
+        static const char octetContentType[];
         static const std::vector<std::string> acceptedEncodings;
 
         static std::string GzipCompress(std::string inputString);
 
-        static std::string BuildResponse(HttpPacket* packet,const char* headerResponse, std::string responseBody, const CONTENTTYPE responseType, const bool succes);
+        static HttpHeader BuildResponse(HttpPacket* packet, const char* headerResponse, size_t contentLength, CONTENTTYPE responseType, bool succes);
+
+        char* BuildResponseBody(HttpPacket* packet, const char* responseBody, size_t& outLength);
 };
 #endif //GLOBALS_H

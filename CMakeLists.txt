@@ -38,5 +38,7 @@ add_executable(server ${SOURCE_FILES}
         src/utilities/ThreadPool.h
         src/utilities/StringUtils.cpp
         src/utilities/StringUtils.h
+        src/objects/HttpHeader.cpp
+        src/objects/HttpHeader.h
 )
 target_link_libraries(server pthread zlibstatic)

@@ -4,9 +4,8 @@
 
 #include "UserAgentController.h"
 
-void UserAgentController::SendResponse(const SocketWrapper* socketWrapper, HttpPacket* packet)
+void UserAgentController::GetResponse(HttpPacket* packet, SocketWrapper* connectedClient)
 {
-    std::string tempString = Globals::BuildResponse(packet,Globals::getSuccessResponse, packet->GetUserAgent(), CONTENTTYPE::PLAIN, true);
-
-    send(socketWrapper->socket,tempString.c_str(),static_cast<int>(tempString.length()),0);
+    std::string temp = Globals::BuildResponse(packet,Globals::getSuccessResponse, 0, CONTENTTYPE::PLAIN, true).ToString();
+    send(connectedClient->socket,temp.c_str(),static_cast<int>(temp.length()),0);
 }

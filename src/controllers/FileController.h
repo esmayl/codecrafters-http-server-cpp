@@ -13,8 +13,11 @@
 #include <cstring>
 #include <sys/types.h>
 #include <utility>
-#include "../objects/HttpPacket.h"
+#include <fstream>
+#include <filesystem>
+
 #include "../Globals.h"
+#include "../objects/HttpPacket.h"
 #include "../objects/SocketWrapper.h"
 
 class FileController
@@ -22,8 +25,10 @@ class FileController
 
 public:
     explicit FileController(std::string fileFolder);
-    void GetResponse(HttpPacket* packet, const SocketWrapper* socketWrapper, const char* fileLocation) const;
-    void PostResponse(HttpPacket* packet, const SocketWrapper* socketWrapper, const char* fileLocation, const char* dataToWrite, const std::streamsize* dataLength) const;
+
+    void GetResponse(HttpPacket* packet, SocketWrapper* connectedClient) const;
+
+    void PostResponse(HttpPacket* packet, SocketWrapper* connectedClient) const;
 private:
     std::string fileFolder;
 };

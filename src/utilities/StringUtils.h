@@ -15,6 +15,7 @@ class StringUtils {
         static std::string RightTrim(const std::string& str);
         static std::string Trim(const std::string& str);
         static std::vector<std::string> SplitString(const std::string& str, char delimiter);
+        static std::string DecodeUrl(const std::string& encoded);
 };
 
 

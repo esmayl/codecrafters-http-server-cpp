@@ -77,7 +77,7 @@ HttpPacket::HttpPacket(const std::string& rawString)
     endEndPointChar = splitString[0].find(' ',startEndpointChar+1);
 
     startEndpointChar+=1; // +1 to skip the /
-    endpoint = splitString[0].substr(startEndpointChar,endEndPointChar-startEndpointChar);
+    endpoint = StringUtils::DecodeUrl(splitString[0].substr(startEndpointChar,endEndPointChar-startEndpointChar));
 
     // Sanitizing the endpoint to prevent path traversal
     size_t pos;

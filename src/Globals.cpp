@@ -4,41 +4,42 @@
 
 #include "Globals.h"
 
-const char Globals::getSuccessResponse[] = "HTTP/1.1 200 OK\r\n";
-const char Globals::postSuccessResponse[] = "HTTP/1.1 201 Created\r\n";
-const char Globals::errorResponse[] = "HTTP/1.1 404 Not Found\r\n";
-const char Globals::contentType[] = "Content-Type: ";
-const char Globals::contentLength[] = "Content-Length: ";
-const char Globals::contentEncoding[] = "Content-Encoding: ";
+const char Globals::getSuccessResponse[] = "200 OK\r\n";
+const char Globals::postCreatedResponse[] = "201 Created\r\n";
+const char Globals::errorResponse[] = "404 Not Found\r\n";
+const char Globals::plainContentType[] = "text/plain\r\n";
+const char Globals::octetContentType[] = "application/octet-stream\r\n";
+
 const std::vector<std::string> Globals::acceptedEncodings = {"gzip", "deflate", "br"};
 
-std::string Globals::BuildResponse(HttpPacket* packet,const char* headerResponse, std::string responseBody, const CONTENTTYPE responseType, const bool succes)
+HttpHeader Globals::BuildResponse(HttpPacket* packet, const char* headerResponse, const size_t contentLength,const CONTENTTYPE responseType, const bool succes)
 {
-    std::string buildResponse;
+    HttpHeader header;
+    header.responseStatus = headerResponse;
+    header.chunked = false; // Just set this initially, can always be overwritten when sending a big file
+
+    if(!succes)
+    {
+        header.responseStatus = Globals::errorResponse;
+        header.success = false;
+        return header;
+    }
+
+    if (contentLength > 1048576) // 1 MB
+    {
+        header.chunked = true;
+    }
+
     bool isAccepted = false;
     int acceptedIndex = -1;
 
-    if(succes)
-    {
-        buildResponse.append(headerResponse);
-
-    }
-    else
-    {
-        buildResponse.append(headerResponse);
-        buildResponse.append("\r\n");
-
-        return buildResponse;
-    }
 
     if(!packet->GetContentEncoding()->empty())
     {
-
         std::vector<std::string>* requestEncoding = packet->GetContentEncoding();
 
-        for(const auto& str: acceptedEncodings)
+        for(const std::string& str: acceptedEncodings)
         {
-            acceptedIndex++;
             size_t requestSize = requestEncoding->size();
 
             for(int i=0;i<requestSize;i++)
@@ -46,6 +47,7 @@ std::string Globals::BuildResponse(HttpPacket* packet,const char* headerResponse
                 if(str == requestEncoding->at(i))
                 {
                     isAccepted = true;
+                    acceptedIndex = i;
                     break;
                 }
             }
@@ -59,55 +61,80 @@ std::string Globals::BuildResponse(HttpPacket* packet,const char* headerResponse
 
         if(isAccepted)
         {
-            buildResponse.append(Globals::contentEncoding);
-            buildResponse.append(acceptedEncodings[acceptedIndex]);
+            header.contentEncoding = acceptedEncodings[acceptedIndex];
             printf("Building response with content encoding: ");
-            printf(acceptedEncodings[acceptedIndex].c_str());
-            buildResponse.append("\r\n");
-
-            if(acceptedEncodings[acceptedIndex] == "gzip")
-            {
-                responseBody = GzipCompress(responseBody);
-            }
+            printf(header.contentEncoding.c_str());
+            printf("\n");
         }
     }
-
-    buildResponse.append(contentType);
 
     switch (responseType)
     {
         case CONTENTTYPE::PLAIN:
-            buildResponse.append("text/plain\r\n");
+            header.contentType = Globals::plainContentType;
             break;
         case CONTENTTYPE::OCTET:
-            buildResponse.append("application/octet-stream\r\n");
+            header.contentType = Globals::octetContentType;
             break;
     }
 
-    buildResponse.append(contentLength);
-
-    buildResponse.append(std::to_string(responseBody.length()));
-    buildResponse.append("\r\n\r\n");
+    header.contentLength = std::to_string(contentLength);
 
     printf("Build response:\n\n");
-    printf(buildResponse.c_str());
+    printf(header.ToString().c_str());
 
-    if(!responseBody.empty())
-    {
-        buildResponse.append(responseBody);
-        printf("[Gzip compressed body, content length: ");
-        printf(std::to_string(responseBody.length()).c_str());
-        printf("]\n\n");
-    }
-    else
-    {
-        buildResponse.append("\r\n");
-         printf("\n\n");
-    }
+    // if(!responseBody.empty())
+    // {
+    //     buildResponse.append(responseBody);
+    //     printf("[Gzip compressed body, content length: ");
+    //     printf(std::to_string(responseBody.length()).c_str());
+    //     printf("]\n\n");
+    // }
+    // else
+    // {
+    //     buildResponse.append("\r\n");
+    //     printf("\n\n");
+    // }
 
-    return buildResponse;
+    return header;
 }
 
+char* Globals::BuildResponseBody(HttpPacket* packet, const char* responseBody, size_t& outLength)
+{
+    bool isAccepted = false;
+    int acceptedIndex = -1;
+    char* compressedBody = nullptr;
+
+    if (!packet->GetContentEncoding()->empty()) {
+        std::vector<std::string>* requestEncoding = packet->GetContentEncoding();
+
+        for (size_t i = 0; i < acceptedEncodings.size(); i++) {
+            for (const std::string& encoding : *requestEncoding) {
+                if (acceptedEncodings[i] == encoding) {
+                    isAccepted = true;
+                    acceptedIndex = i;
+                    break;
+                }
+            }
+            if (isAccepted) break;
+        }
+
+        if (isAccepted && acceptedEncodings[acceptedIndex] == "gzip") {
+            std::string compressedStr = GzipCompress(std::string(responseBody));
+            outLength = compressedStr.size();
+            compressedBody = new char[outLength + 1];
+            std::memcpy(compressedBody, compressedStr.c_str(), outLength);
+            compressedBody[outLength] = '\0';
+            return compressedBody;
+        }
+    }
+
+    outLength = std::strlen(responseBody);
+    compressedBody = new char[outLength + 1];
+    std::memcpy(compressedBody, responseBody, outLength);
+    compressedBody[outLength] = '\0';
+    return compressedBody;
+}
 
 std::string Globals::GzipCompress(std::string inputString)
 {

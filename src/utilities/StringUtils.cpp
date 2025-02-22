@@ -4,6 +4,8 @@
 
 #include "StringUtils.h"
 
+#include <charconv>
+
 // Function to trim whitespace from the beginning of a string
 std::string StringUtils::LeftTrim(const std::string& str) {
     size_t start = str.find_first_not_of(" \t\n\r\f\v");
@@ -32,4 +34,26 @@ std::vector<std::string> StringUtils::SplitString(const std::string& str, char d
     }
 
     return result;
+}
+
+std::string StringUtils::DecodeUrl(const std::string &encoded){
+    std::string decoded;
+    decoded.reserve(encoded.length()); // Reserve memory to avoid multiple reallocations
+
+    for (size_t i = 0; i < encoded.length(); ++i) {
+        if (encoded[i] == '%' && i + 2 < encoded.length()) {
+            char hex[3] = { encoded[i + 1], encoded[i + 2], '\0' };
+            int charCode;
+            if (std::from_chars(hex, hex + 2, charCode, 16).ec == std::errc()) {
+                decoded += static_cast<char>(charCode);
+                i += 2;
+                continue;
+            }
+        } else if (encoded[i] == '+') {
+            decoded += ' '; // '+' in URLs represents a space
+        } else {
+            decoded += encoded[i];
+        }
+    }
+    return decoded;
 }

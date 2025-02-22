@@ -12,6 +12,7 @@
 #include <utility>
 #include <memory>
 #include <thread>
+#include <filesystem>
 
 #include "objects/HttpPacket.h"
 #include "objects/SocketWrapper.h"
@@ -32,7 +33,8 @@ public:
     int Start();
     void AcceptConnection();
     void HandleRequest(SocketWrapper* connectedClient);
-    void SetupDirectory(std::string folderRoot);
+
+    bool SetupDirectory(std::string folderRoot);
 
 private:
     bool canUseFiles = false;

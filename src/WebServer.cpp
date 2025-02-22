@@ -146,42 +146,50 @@ void WebServer::HandleRequest(SocketWrapper* connectedClient)
         printf("Endpoint hit: ");
         printf(requestPacket.GetEndpoint().c_str());
         printf("\n");
+
         std::string endpoint = requestPacket.GetEndpoint();
 
         //TODO: Create controller that communicated with sql server
         //TODO: Add performance metric in all responses, amount of seconds past since receiving request until sending response
         //TODO: Make video stream endpoint, mount folder from router and stream out maybe hls? multicast?
-        if(canUseFiles && endpoint.compare(0,7,"/files/") == 0)
+        if(requestPacket.GetRequestType() == HTTPMETHOD::GET)
         {
-            if(requestPacket.GetRequestType() == HTTPMETHOD::GET)
+            if(canUseFiles && endpoint.compare(0,7,"/files/") == 0)
             {
-                this->fileControllerInstance->GetResponse(&requestPacket,connectedClient,endpoint.substr(6).c_str());
+                this->fileControllerInstance->GetResponse(&requestPacket,connectedClient);
             }
-            else if(requestPacket.GetRequestType() == HTTPMETHOD::POST)
+            else if(endpoint.compare(0,11,"/user-agent") == 0)
             {
-                this->fileControllerInstance->PostResponse(&requestPacket,connectedClient,endpoint.substr(6).c_str(), requestPacket.GetBody(), requestPacket.GetBodyLength());
+                UserAgentController::GetResponse(&requestPacket,connectedClient);
+            }
+            else if(endpoint.compare(0,5,"/echo") == 0)
+            {
+                EchoController::GetResponse(&requestPacket,connectedClient);
+            }
+            else if(endpoint.empty())
+            {
+                std::string response = Globals::BuildResponse(&requestPacket,Globals::getSuccessResponse,0, CONTENTTYPE::PLAIN, true).ToString();
+                send(connectedClient->socket,response.c_str(),static_cast<int>(response.length()),0);
+            }
+            else
+            {
+                std::string response = Globals::BuildResponse(&requestPacket,Globals::errorResponse,0, CONTENTTYPE::PLAIN, false).ToString();
+                send(connectedClient->socket,response.c_str(),static_cast<int>(response.length()),0);
             }
         }
-        else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && endpoint.compare(0,11,"/user-agent") == 0)
+        else if(requestPacket.GetRequestType() == HTTPMETHOD::POST)
         {
-            UserAgentController::SendResponse(connectedClient,&requestPacket);
+            if(canUseFiles && endpoint.compare(0,7,"/files/") == 0)
+            {
+                this->fileControllerInstance->PostResponse(&requestPacket,connectedClient);
+            }
+            else
+            {
+                std::string response = Globals::BuildResponse(&requestPacket,Globals::errorResponse,0, CONTENTTYPE::PLAIN, false).ToString();
+                send(connectedClient->socket,response.c_str(),static_cast<int>(response.length()),0);
+            }
         }
-        else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && endpoint.compare(0,5,"/echo") == 0)
-        {
-            EchoController::SendResponse(connectedClient,&requestPacket);
-        }
-        else if(requestPacket.GetRequestType() == HTTPMETHOD::GET && endpoint.empty())
-        {
-            std::string emptyResponse = Globals::BuildResponse(&requestPacket,Globals::getSuccessResponse,"", CONTENTTYPE::PLAIN, true);
 
-            send(connectedClient->socket,emptyResponse.c_str(),static_cast<int>(emptyResponse.length()),0);
-        }
-        else if(requestPacket.GetRequestType() == HTTPMETHOD::GET)
-        {
-            std::string errorResponse = Globals::BuildResponse(&requestPacket,Globals::errorResponse,"", CONTENTTYPE::PLAIN, false);
-
-            send(connectedClient->socket,errorResponse.c_str(),static_cast<int>(errorResponse.length()),0);
-        }
     }
 
 #ifdef _WIN64
@@ -192,9 +200,16 @@ void WebServer::HandleRequest(SocketWrapper* connectedClient)
 }
 
 
-void WebServer::SetupDirectory(std::string folderRoot)
+bool WebServer::SetupDirectory(std::string folderRoot)
 {
-    fileControllerInstance = std::make_unique<FileController>(std::move(folderRoot));
-
-    canUseFiles = true;
+    if (std::filesystem::exists(folderRoot))
+    {
+        fileControllerInstance = std::make_unique<FileController>(std::move(folderRoot));
+        canUseFiles = true;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }

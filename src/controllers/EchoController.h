@@ -12,8 +12,8 @@
 #include <string>
 #include <cstring>
 #include <sys/types.h>
-#include "../objects/HttpPacket.h"
 #include "../Globals.h"
+#include "../objects/HttpPacket.h"
 #include "../objects/SocketWrapper.h"
 
 #ifdef _WIN64
@@ -34,7 +34,7 @@
 class EchoController
 {
     public:
-        static void SendResponse(const SocketWrapper* socketWrapper, HttpPacket* packet);
+        static void GetResponse(HttpPacket* packet, SocketWrapper* connectedClient);
 };
 
 

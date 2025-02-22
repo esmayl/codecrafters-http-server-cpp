@@ -4,14 +4,12 @@
 
 #include "FileController.h"
 
-#include <fstream>
-
 FileController::FileController(std::string fileFolder)
 {
     this->fileFolder = std::move(fileFolder);
 }
 
-void FileController::GetResponse(HttpPacket* packet, const SocketWrapper* socketWrapper, const char* fileLocation) const
+void FileController::GetResponse(HttpPacket* packet, SocketWrapper* connectedClient) const
 {
     std::string fileContent;
     std::string tempString;
@@ -19,9 +17,9 @@ void FileController::GetResponse(HttpPacket* packet, const SocketWrapper* socket
     std::string filePath;
 
     filePath.append(fileFolder);
-    filePath.append(fileLocation);
+    filePath.append(packet->GetEndpoint().substr(7));
 
-    std::ifstream inputFile(filePath);
+    std::ifstream inputFile(filePath,std::ios::binary|std::ios::in);
 
     printf("Opening file: ");
     printf(filePath.c_str());
@@ -29,41 +27,63 @@ void FileController::GetResponse(HttpPacket* packet, const SocketWrapper* socket
 
     if(!inputFile.is_open())
     {
-        tempString = Globals::BuildResponse(packet,Globals::errorResponse, filePath+" file not found", CONTENTTYPE::PLAIN, false);
+        tempString = Globals::BuildResponse(packet,Globals::errorResponse,0 , CONTENTTYPE::PLAIN, false).ToString();
+        send(connectedClient->socket,tempString.c_str(),static_cast<int>(tempString.length()),0);
     }
     else
     {
-        fileContent = std::string((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
+        //fileContent = std::string((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
+
+        int fileSize = std::filesystem::file_size(filePath);
+        char* buffer = new char[1024];
+
+        while (inputFile.read(buffer,1024))
+        {
+            tempString = Globals::BuildResponse(packet,Globals::getSuccessResponse, fileSize, CONTENTTYPE::OCTET, true).ToString();
+            send(connectedClient->socket,tempString.c_str(),static_cast<int>(tempString.length()),0);
+        }
 
         inputFile.close();
 
-        tempString = Globals::BuildResponse(packet,Globals::getSuccessResponse, fileContent, CONTENTTYPE::OCTET, true);
+        delete[] buffer;
     }
 
-    send(socketWrapper->socket,tempString.c_str(),static_cast<int>(tempString.length()),0);
 }
 
-void FileController::PostResponse(HttpPacket* packet, const SocketWrapper* socketWrapper, const char* fileLocation, const char* dataToWrite, const std::streamsize* dataLength) const
+void FileController::PostResponse(HttpPacket* packet, SocketWrapper* connectedClient) const
 {
     std::string filePath;
 
     filePath.append(fileFolder);
-    filePath.append(fileLocation);
-
-    std::ofstream outputFile(filePath);
+    filePath.append(packet->GetEndpoint().substr(7));
 
     printf("Opening file: ");
     printf(filePath.c_str());
     printf("\n");
     printf("Writing: ");
-    printf(dataToWrite);
+    printf(packet->GetBody());
     printf("\n");
 
-    outputFile.write(dataToWrite,*dataLength);
+    if(std::filesystem::exists(filePath))
+    {
+        std::ofstream outputFile(filePath);
 
+        // Move to the beginning of the file
+        outputFile.seekp(0, std::ios::beg);
+        outputFile.write(packet->GetBody(),*packet->GetBodyLength());
+        outputFile.close();
+
+        std::string temp = Globals::BuildResponse(packet,Globals::getSuccessResponse,0,CONTENTTYPE::OCTET, true).ToString();
+        send(connectedClient->socket,temp.c_str(),static_cast<int>(temp.length()),0);
+
+    }
+
+    std::ofstream outputFile(filePath);
+
+    outputFile.write(packet->GetBody(),*packet->GetBodyLength());
     outputFile.close();
 
-    std::string response = Globals::BuildResponse(packet,Globals::postSuccessResponse,"",CONTENTTYPE::OCTET,true);
+    std::string temp = Globals::BuildResponse(packet,Globals::postCreatedResponse,0,CONTENTTYPE::OCTET, true).ToString();
 
-    send(socketWrapper->socket,response.c_str(),static_cast<int>(response.length()),0);
+    send(connectedClient->socket,temp.c_str(),static_cast<int>(temp.length()),0);
 }
