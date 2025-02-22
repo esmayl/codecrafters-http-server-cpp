@@ -4,11 +4,11 @@
 
 #include "Globals.h"
 
-const char Globals::getSuccessResponse[] = "200 OK\r\n";
-const char Globals::postCreatedResponse[] = "201 Created\r\n";
-const char Globals::errorResponse[] = "404 Not Found\r\n";
-const char Globals::plainContentType[] = "text/plain\r\n";
-const char Globals::octetContentType[] = "application/octet-stream\r\n";
+const char Globals::getSuccessResponse[] = "200 OK";
+const char Globals::postCreatedResponse[] = "201 Created";
+const char Globals::errorResponse[] = "404 Not Found";
+const char Globals::plainContentType[] = "text/plain";
+const char Globals::octetContentType[] = "application/octet-stream";
 
 const std::vector<std::string> Globals::acceptedEncodings = {"gzip", "deflate", "br"};
 
@@ -17,6 +17,7 @@ HttpHeader Globals::BuildResponse(HttpPacket* packet, const char* headerResponse
     HttpHeader header;
     header.responseStatus = headerResponse;
     header.chunked = false; // Just set this initially, can always be overwritten when sending a big file
+    header.success = true;
 
     if(!succes)
     {
