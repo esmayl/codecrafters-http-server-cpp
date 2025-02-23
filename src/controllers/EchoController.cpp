@@ -23,7 +23,7 @@ void EchoController::GetResponse(HttpPacket* packet, SocketWrapper* connectedCli
     // Created header using the accurate size of the content
     std::string resp = Globals::BuildResponse(packet,Globals::getSuccessResponse, contentLength, CONTENTTYPE::PLAIN, true).ToString();
 
-    resp = resp.append("\r\n");
+    resp.append("\r\n");
 
     // Append the content to the response
     resp.append(std::string(content, contentLength)); // Ensures binary-safe append
