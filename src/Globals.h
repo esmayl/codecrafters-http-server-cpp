@@ -32,6 +32,6 @@ class Globals
 
         static HttpHeader BuildResponse(HttpPacket* packet, const char* headerResponse, size_t contentLength, CONTENTTYPE responseType, bool succes);
 
-        char* BuildResponseBody(HttpPacket* packet, const char* responseBody, size_t& outLength);
+        static char* BuildResponseBody(HttpPacket* packet, const char* responseBody, size_t& outLength);
 };
 #endif //GLOBALS_H

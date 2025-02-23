@@ -16,7 +16,7 @@ HttpHeader Globals::BuildResponse(HttpPacket* packet, const char* headerResponse
 {
     HttpHeader header;
     header.responseStatus = headerResponse;
-    header.chunked = false; // Just set this initially, can always be overwritten when sending a big file
+    header.chunked = false;
     header.success = true;
 
     if(!succes)
@@ -81,9 +81,6 @@ HttpHeader Globals::BuildResponse(HttpPacket* packet, const char* headerResponse
 
     header.contentLength = std::to_string(contentLength);
 
-    printf("Build response:\n\n");
-    printf(header.ToString().c_str());
-
     // if(!responseBody.empty())
     // {
     //     buildResponse.append(responseBody);
@@ -123,17 +120,22 @@ char* Globals::BuildResponseBody(HttpPacket* packet, const char* responseBody, s
         if (isAccepted && acceptedEncodings[acceptedIndex] == "gzip") {
             std::string compressedStr = GzipCompress(std::string(responseBody));
             outLength = compressedStr.size();
-            compressedBody = new char[outLength + 1];
-            std::memcpy(compressedBody, compressedStr.c_str(), outLength);
-            compressedBody[outLength] = '\0';
+            compressedBody = new char[outLength];
+            std::memcpy(compressedBody, compressedStr.data(), outLength);
+
+            for (size_t i = 0; i < outLength; i++) {
+                printf("%02X ", static_cast<unsigned char>(compressedBody[i]));
+            }
+
+            printf("\n");
+
             return compressedBody;
         }
     }
 
     outLength = std::strlen(responseBody);
-    compressedBody = new char[outLength + 1];
+    compressedBody = new char[outLength];
     std::memcpy(compressedBody, responseBody, outLength);
-    compressedBody[outLength] = '\0';
     return compressedBody;
 }
 

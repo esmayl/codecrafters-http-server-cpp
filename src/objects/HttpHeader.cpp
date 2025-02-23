@@ -20,14 +20,13 @@ std::string HttpHeader::ToString()
 
     if (!this->chunked)
     {
-        stringStream << "Content-Length: " << this->contentLength<< "\r\n";
+        stringStream << "Content-Length: " << this->contentLength << "\r\n";
     }
     else
     {
         stringStream << "Transfer-Encoding: chunked" << "\r\n";
     }
 
-    stringStream << "\r\n";
 
     return stringStream.str();
 }
