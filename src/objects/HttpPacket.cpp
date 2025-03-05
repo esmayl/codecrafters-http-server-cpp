@@ -111,7 +111,7 @@ std::string& HttpPacket::GetEndpoint()
     return endpoint;
 }
 
-std::string & HttpPacket::GetUserAgent()
+std::string& HttpPacket::GetUserAgent()
 {
     return userAgent;
 }

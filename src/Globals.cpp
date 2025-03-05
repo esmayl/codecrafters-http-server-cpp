@@ -4,11 +4,22 @@
 
 #include "Globals.h"
 
+#include <cstdint>
+
 const char Globals::getSuccessResponse[] = "200 OK";
 const char Globals::postCreatedResponse[] = "201 Created";
 const char Globals::errorResponse[] = "404 Not Found";
 const char Globals::plainContentType[] = "text/plain";
 const char Globals::octetContentType[] = "application/octet-stream";
+const std::string Globals::textFileExtensions[] = {
+    ".txt",
+    ".json",
+    ".html",
+    ".php",
+    ".js",
+    ".ts",
+    ".css",
+};
 
 const std::vector<std::string> Globals::acceptedEncodings = {"gzip", "deflate", "br"};
 
@@ -26,9 +37,13 @@ HttpHeader Globals::BuildResponse(HttpPacket* packet, const char* headerResponse
         return header;
     }
 
-    if (contentLength > 1048576) // 1 MB
+    if (contentLength >= 1024) // 1 KB
     {
         header.chunked = true;
+    }
+    else
+    {
+        header.contentLength = std::to_string(contentLength);
     }
 
     bool isAccepted = false;
@@ -79,7 +94,6 @@ HttpHeader Globals::BuildResponse(HttpPacket* packet, const char* headerResponse
             break;
     }
 
-    header.contentLength = std::to_string(contentLength);
 
     // if(!responseBody.empty())
     // {
@@ -97,11 +111,10 @@ HttpHeader Globals::BuildResponse(HttpPacket* packet, const char* headerResponse
     return header;
 }
 
-char* Globals::BuildResponseBody(HttpPacket* packet, const char* responseBody, size_t& outLength)
+std::vector<uint8_t> Globals::BuildResponseBody(HttpPacket* packet, const std::vector<uint8_t>& inputData, size_t& outLength)
 {
     bool isAccepted = false;
-    int acceptedIndex = -1;
-    char* compressedBody = nullptr;
+    size_t acceptedIndex = -1;
 
     if (!packet->GetContentEncoding()->empty()) {
         std::vector<std::string>* requestEncoding = packet->GetContentEncoding();
@@ -118,69 +131,65 @@ char* Globals::BuildResponseBody(HttpPacket* packet, const char* responseBody, s
         }
 
         if (isAccepted && acceptedEncodings[acceptedIndex] == "gzip") {
-            std::string compressedStr = GzipCompress(std::string(responseBody));
-            outLength = compressedStr.size();
-            compressedBody = new char[outLength];
-            std::memcpy(compressedBody, compressedStr.data(), outLength);
-
-            for (size_t i = 0; i < outLength; i++) {
-                printf("%02X ", static_cast<unsigned char>(compressedBody[i]));
-            }
-
-            printf("\n");
-
-            return compressedBody;
+            std::vector<uint8_t> compressedData = GzipCompress(inputData);
+            outLength = compressedData.size();
+            return compressedData;
         }
     }
 
-    outLength = std::strlen(responseBody);
-    compressedBody = new char[outLength];
-    std::memcpy(compressedBody, responseBody, outLength);
-    return compressedBody;
+    printf("Did no compression");
+
+    outLength = inputData.size();
+    return inputData;
 }
 
-std::string Globals::GzipCompress(std::string inputString)
+std::vector<uint8_t> Globals::GzipCompress(const std::vector<uint8_t>& inputData)
 {
-    z_stream deflateStream;
+    if (inputData.empty()) return {}; // Return empty if no input
+
+    z_stream deflateStream{};
     deflateStream.zalloc = Z_NULL;
     deflateStream.zfree = Z_NULL;
     deflateStream.opaque = Z_NULL;
 
-    deflateStream.avail_in = inputString.size();
-    deflateStream.next_in = reinterpret_cast<Bytef*>(const_cast<char*>(inputString.data()));
+    deflateStream.avail_in = static_cast<uInt>(inputData.size());
+    deflateStream.next_in = const_cast<Bytef*>(inputData.data());
 
-    // 15 == window bits for sliding window (max for the deflate algorithm)
-    // 16 == gzip header
-    // 8 == memory level, 1 - 9 , 1 using least amount of memory , 9 using most amount. 9 should be the best compression and most memory and vice versa for 1
-    int returnVal = deflateInit2(&deflateStream,Z_BEST_COMPRESSION,Z_DEFLATED,15 | 16,8,Z_DEFAULT_STRATEGY);
-
+    // Initialize with gzip format (15 | 16), max compression (Z_BEST_COMPRESSION), and default memory strategy
+    int returnVal = deflateInit2(&deflateStream, Z_BEST_COMPRESSION, Z_DEFLATED, 15 | 16, 8, Z_DEFAULT_STRATEGY);
     if (returnVal != Z_OK) {
-        printf("deflateInit2 failed");
-        return inputString;
+        printf("deflateInit2 failed\n");
+        return {};
     }
 
-    char outBuffer[32768];
-    std::string compressed;
+    // Allocate buffer with a reasonable initial size
+    std::vector<uint8_t> compressed;
+    compressed.resize(inputData.size() / 2 + 128);  // Adjust size as needed
 
-    do
-    {
-        deflateStream.avail_out = sizeof(outBuffer);
-        deflateStream.next_out = reinterpret_cast<Bytef*>(outBuffer);
-        returnVal = deflate(&deflateStream,Z_FINISH);
+    deflateStream.avail_out = static_cast<uInt>(compressed.size());
+    deflateStream.next_out = compressed.data();
 
-        if(compressed.size() < deflateStream.total_out)
-        {
-            compressed.append(outBuffer,deflateStream.total_out - compressed.size());
+    // Compression loop to handle large data properly
+    do {
+        returnVal = deflate(&deflateStream, Z_FINISH);
+        if (returnVal == Z_OK || returnVal == Z_BUF_ERROR) {
+            // Resize buffer and continue
+            size_t currentSize = compressed.size();
+            compressed.resize(currentSize * 2); // Double buffer size
+            deflateStream.avail_out = static_cast<uInt>(compressed.size() - currentSize);
+            deflateStream.next_out = compressed.data() + currentSize;
         }
-    } while (returnVal == Z_OK);
+    } while (returnVal != Z_STREAM_END);
 
-    deflateEnd(&deflateStream);
-
-    if(returnVal != Z_STREAM_END)
-    {
-        printf("deflate failed");
-        return inputString;
+    if (returnVal != Z_STREAM_END) {
+        printf("deflate failed\n");
+        deflateEnd(&deflateStream);
+        return {};
     }
+
+    // Resize to actual compressed size
+    compressed.resize(deflateStream.total_out);
+    deflateEnd(&deflateStream);
 
     return compressed;
 }

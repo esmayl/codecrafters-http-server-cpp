@@ -40,5 +40,7 @@ add_executable(server ${SOURCE_FILES}
         src/utilities/StringUtils.h
         src/objects/HttpHeader.cpp
         src/objects/HttpHeader.h
+        src/utilities/GzipStream.cpp
+        src/utilities/GzipStream.h
 )
 target_link_libraries(server pthread zlibstatic)

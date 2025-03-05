@@ -37,7 +37,7 @@ void WebServer::AcceptConnection()
     // Using a single thread for accepting, probably not possible to make this multithreaded
     returnSocket.socket = accept(serverSocketWrapper.socket, reinterpret_cast<sockaddr*>(&client_addr), &casted_client_addr_len);
     returnSocket.reuse = 1;
-    if (returnSocket.socket != INVALID_SOCKET)
+    if (returnSocket.socket != -1)
     {
         // Create a new thread for every request
         threadPool.Enqueue([this,returnSocket]() mutable

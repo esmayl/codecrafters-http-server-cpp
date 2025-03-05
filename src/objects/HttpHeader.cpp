@@ -15,7 +15,7 @@ std::string HttpHeader::ToString()
         return stringStream.str();
     }
 
-    stringStream << "Content-Encoding: " << this->contentEncoding << "\r\n";
+    // stringStream << "Content-Encoding: " << this->contentEncoding << "\r\n";
     stringStream << "Content-Type: " << this->contentType << "\r\n";
 
     if (!this->chunked)
@@ -24,7 +24,14 @@ std::string HttpHeader::ToString()
     }
     else
     {
-        stringStream << "Transfer-Encoding: chunked" << "\r\n";
+        stringStream << "Transfer-Encoding: chunked";
+
+        if (this->contentEncoding == "gzip")
+        {
+            stringStream << ",gzip";
+        }
+
+        stringStream << "\r\n";
     }
 
 

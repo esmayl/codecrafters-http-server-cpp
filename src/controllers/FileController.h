@@ -19,6 +19,7 @@
 #include "../Globals.h"
 #include "../objects/HttpPacket.h"
 #include "../objects/SocketWrapper.h"
+#include "../utilities/GzipStream.h"
 
 class FileController
 {

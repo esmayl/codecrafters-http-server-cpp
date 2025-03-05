@@ -10,6 +10,7 @@
 #include <vector>
 #include <iostream>
 #include <ostream>
+#include <stdint.h>
 #include <zlib.h>
 
 #include "enums/CONTENTTYPE.h"
@@ -26,12 +27,14 @@ class Globals
         static const char connectionClose[];
         static const char plainContentType[];
         static const char octetContentType[];
+        static const std::string textFileExtensions[];
         static const std::vector<std::string> acceptedEncodings;
 
-        static std::string GzipCompress(std::string inputString);
+        static std::vector<uint8_t> GzipCompress(const std::vector<uint8_t>& inputData);
 
         static HttpHeader BuildResponse(HttpPacket* packet, const char* headerResponse, size_t contentLength, CONTENTTYPE responseType, bool succes);
 
-        static char* BuildResponseBody(HttpPacket* packet, const char* responseBody, size_t& outLength);
+        static std::vector<uint8_t> BuildResponseBody(HttpPacket* packet, const std::vector<uint8_t>& inputData,
+                                                      size_t& outLength);
 };
 #endif //GLOBALS_H
