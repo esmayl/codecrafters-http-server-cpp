@@ -99,6 +99,8 @@ void FileController::GetResponse(HttpPacket* packet, SocketWrapper* connectedCli
 
         int errorCode = 0;
 
+        size_t bytesSend =0;
+
         while (inputFile)
         {
             inputFile.read(reinterpret_cast<char*>(fileData.data()),bufferSize);
@@ -108,23 +110,19 @@ void FileController::GetResponse(HttpPacket* packet, SocketWrapper* connectedCli
 
             // std::vector<uint8_t> content = Globals::BuildResponseBody(packet,fileData,readBytes);
 
-            // if (packet->GetContentEncoding() == "gzip")
-            // {
-            //
-            // }
-
-            // content = gzipStream.compress(std::vector<uint8_t>(fileData.begin(),fileData.end()),false);
+            content = gzipStream.compress(std::vector<uint8_t>(fileData.begin(),fileData.end()),false);
 
             // Build a chunk
             sprintf(chunkHeader, "%zx\r\n", content.size());
 
+            // Checking if a chunk was send successfully, will fail when client stops download
             errorCode = send(connectedClient->socket, chunkHeader, static_cast<int>(strlen(chunkHeader)), 0);
             if (errorCode == -1 )
             {
                 break;
             }
 
-            errorCode = send(connectedClient->socket, reinterpret_cast<const char*>(fileData.data()), static_cast<int>(fileData.size()), 0);
+            errorCode = send(connectedClient->socket, reinterpret_cast<const char*>(content.data()), static_cast<int>(content.size()), 0);
             if (errorCode == -1 )
             {
                 break;
@@ -134,19 +132,21 @@ void FileController::GetResponse(HttpPacket* packet, SocketWrapper* connectedCli
             if (errorCode == -1 )
             {
                 break;
-                // Handle error: log the issue and possibly close the connection
             }
-            printf("Sending chunk\r\n");
+
+            bytesSend += readBytes;
+            float percentageSend = static_cast<float>(bytesSend) / static_cast<float>(fileSize) * 100;
+            printf(std::to_string(percentageSend).append(" %% send\n").c_str());
         }
 
-        // std::vector<uint8_t> finalFlush = gzipStream.compress({}, true);
-        //
-        // if (!finalFlush.empty()) {
-        //     sprintf(chunkHeader, "%zx\r\n", finalFlush.size());
-        //     send(connectedClient->socket, chunkHeader, static_cast<int>(strlen(chunkHeader)), 0);
-        //     send(connectedClient->socket, reinterpret_cast<const char*>(finalFlush.data()), static_cast<int>(finalFlush.size()), 0);
-        //     send(connectedClient->socket, "\r\n", 2, 0);
-        // }
+        std::vector<uint8_t> finalFlush = gzipStream.compress({}, true);
+
+        if (!finalFlush.empty()) {
+            sprintf(chunkHeader, "%zx\r\n", finalFlush.size());
+            send(connectedClient->socket, chunkHeader, static_cast<int>(strlen(chunkHeader)), 0);
+            send(connectedClient->socket, reinterpret_cast<const char*>(finalFlush.data()), static_cast<int>(finalFlush.size()), 0);
+            send(connectedClient->socket, "\r\n", 2, 0);
+        }
 
         inputFile.close();
 
@@ -162,17 +162,6 @@ void FileController::GetResponse(HttpPacket* packet, SocketWrapper* connectedCli
 #endif
 
         return;
-        //
-        // char* response = Globals::BuildResponseBody(packet,buffer,)
-        // while (inputFile.read(buffer,1024))
-        // {
-        //
-        //     send(connectedClient->socket,responseHeader.c_str(),static_cast<int>(responseHeader.length()),0);
-        // }
-        //
-        // inputFile.close();
-        //
-        // delete[] buffer;
     }
 
 }
