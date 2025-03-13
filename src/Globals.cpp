@@ -41,10 +41,8 @@ HttpHeader Globals::BuildResponse(HttpPacket* packet, const char* headerResponse
     {
         header.chunked = true;
     }
-    else
-    {
-        header.contentLength = std::to_string(contentLength);
-    }
+
+    header.contentLength = std::to_string(contentLength);
 
     bool isAccepted = false;
     int acceptedIndex = -1;

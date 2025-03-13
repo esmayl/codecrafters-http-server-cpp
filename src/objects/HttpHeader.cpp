@@ -18,9 +18,9 @@ std::string HttpHeader::ToString()
     stringStream << "Content-Encoding: " << this->contentEncoding << "\r\n";
     stringStream << "Content-Type: " << this->contentType << "\r\n";
 
+    stringStream << "Content-Length: " << this->contentLength << "\r\n";
     if (!this->chunked)
     {
-        stringStream << "Content-Length: " << this->contentLength << "\r\n";
     }
     else
     {
